@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Local editor / assistant tooling
+.claude/
+
+# 360° originals (Insta360, ~214 MB). The site only needs the web versions in assets/tour/.
+# Keep the originals in Drive, or track them with Git LFS; the zip exceeds GitHub's 100 MB file limit.
+assets/public/360 Bilder/
+assets/*.zip
