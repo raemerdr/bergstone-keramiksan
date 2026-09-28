@@ -2,11 +2,12 @@
 
     python3 tools/build-tour.py
 
-Reads   assets/public/360 Bilder/{n}.jpg  (equirectangular, 7680×3840)
-Writes  assets/tour/rooms/node{n}-{2k,4k,6k}.jpg, assets/tour/thumbs/node{n}.jpg,
-        assets/img/tour/hero-360*.jpg and the showroom stills.
-Projection matches assets/js/pano.js: pan + = turn left, tilt + = up, fov = diagonal.
-To add a room: add its arrival view to ENTRY here and its links to ROOMS in assets/js/tour.js.
+Reads   assets/public/360 Bilder/{n}.jpg  (equirectangular, 7680×3840; not in git)
+Writes  public/assets/tour/rooms/node{n}-{2k,4k,6k}.jpg, public/assets/tour/thumbs/node{n}.jpg,
+        public/assets/img/tour/hero-360*.jpg and the showroom stills.
+Projection matches lib/tour/pano-viewer.ts: pan + = turn left, tilt + = up, fov = diagonal.
+To add a room: add its arrival view to ENTRY here, its links to ROOMS in lib/tour/rooms.ts
+and its name (room.node{n}) to lib/i18n/de.ts and en.ts.
 """
 import os, sys, json, time
 import numpy as np
@@ -15,7 +16,8 @@ from concurrent.futures import ProcessPoolExecutor
 
 ROOT = str(__import__('pathlib').Path(__file__).resolve().parent.parent)
 SRC = f'{ROOT}/assets/public/360 Bilder'
-OUT = f'{ROOT}/assets/tour'
+OUT = f'{ROOT}/public/assets/tour'
+STILLS = f'{ROOT}/public/assets/img/tour'
 Image.MAX_IMAGE_PIXELS = None
 
 ENTRY = {  # arrival view per room (from the tour's link targets); node1 = tour start
@@ -85,15 +87,15 @@ def build_stills():
     out = {}
     equi = np.asarray(Image.open(f'{SRC}/16.jpg').convert('RGB'), dtype=np.float32)
     _, pan, tilt, fov = HERO
-    view(equi, pan, tilt, fov, 2100, 1020, ss=2).save(f'{ROOT}/assets/img/tour/hero-360.jpg', quality=82, optimize=True, progressive=True)
-    view(equi, pan, tilt, fov, 780, 1440, ss=2).save(f'{ROOT}/assets/img/tour/hero-360-mobile.jpg', quality=80, optimize=True, progressive=True)
+    view(equi, pan, tilt, fov, 2100, 1020, ss=2).save(f'{STILLS}/hero-360.jpg', quality=82, optimize=True, progressive=True)
+    view(equi, pan, tilt, fov, 780, 1440, ss=2).save(f'{STILLS}/hero-360-mobile.jpg', quality=80, optimize=True, progressive=True)
     out['hero'] = 'ok'
     del equi
     equi = np.asarray(Image.open(f'{SRC}/4.jpg').convert('RGB'), dtype=np.float32)
-    view(equi, 0, -2, 100, 1260, 1040, ss=2).save(f'{ROOT}/assets/img/tour/showroom-lounge.jpg', quality=80, optimize=True, progressive=True)
+    view(equi, 0, -2, 100, 1260, 1040, ss=2).save(f'{STILLS}/showroom-lounge.jpg', quality=80, optimize=True, progressive=True)
     del equi
     equi = np.asarray(Image.open(f'{SRC}/6.jpg').convert('RGB'), dtype=np.float32)
-    view(equi, 20, -2, 100, 900, 1350, ss=2).save(f'{ROOT}/assets/img/tour/showroom-hall.jpg', quality=80, optimize=True, progressive=True)
+    view(equi, 20, -2, 100, 900, 1350, ss=2).save(f'{STILLS}/showroom-hall.jpg', quality=80, optimize=True, progressive=True)
     out['stills'] = 'ok'
     return out
 
