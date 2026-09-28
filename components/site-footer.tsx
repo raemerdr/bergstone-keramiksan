@@ -1,4 +1,3 @@
-import { DialogTrigger } from '@/components/dialogs';
 import { NavLink } from '@/components/header-client';
 import { Icon } from '@/components/icons';
 import { TourLink } from '@/components/tour-triggers';
@@ -33,7 +32,7 @@ export async function SiteFooter() {
             <li><NavLink href="/#sortiment">{t('nav.kitchens')}</NavLink></li>
             <li><NavLink href="/#sortiment">{t('cat.worktops')}</NavLink></li>
             <li><NavLink href="/fliesen?art=steinplatten">{t('cat.slabs')}</NavLink></li>
-            <li><DialogTrigger dialog="catalogs">{t('nav.catalogs')}</DialogTrigger></li>
+            <li><NavLink href="/kataloge">{t('nav.catalogs')}</NavLink></li>
           </ul>
         </nav>
         <nav className="footer__col" aria-labelledby="f-service">
@@ -50,7 +49,7 @@ export async function SiteFooter() {
           <p className="footer__title" id="f-company">{t('footer.company')}</p>
           <ul>
             <li><NavLink href="/#showroom">{t('footer.aboutLink')}</NavLink></li>
-            <li><NavLink href="/#referenzen">{t('nav.refs')}</NavLink></li>
+            <li><NavLink href="/#bewertungen">{t('nav.refs')}</NavLink></li>
             <li><NavLink href="/#profis">{t('nav.pro')}</NavLink></li>
             <li><a href="#kontakt">{t('footer.contact')}</a></li>
           </ul>
@@ -65,7 +64,7 @@ export async function SiteFooter() {
         </nav>
       </div>
       <div className="container footer__bottom">
-        <p>© 2026 Bergstone Keramiksan GmbH</p>
+        <p>© 2026 Bergstone Keramiksan GmbH · Uicons by <a href="https://www.flaticon.com/uicons" target="_blank" rel="noopener">Flaticon</a></p>
         <ul>
           <li><a href="#top">{t('footer.imprint')}</a></li>
           <li><a href="#top">{t('footer.privacy')}</a></li>

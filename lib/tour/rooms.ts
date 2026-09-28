@@ -1,4 +1,4 @@
-/* Bergstone Keramiksan — 360° showroom: room graph taken over from the original tour project.
+/* Bergstone Keramiksan 360° showroom: room graph taken over from the original tour project.
    Photos: Insta360 Pro originals → public/assets/tour/rooms/{room}-{2k|4k|6k}.jpg (tools/build-tour.py).
    view  = arrival view [pan, tilt, fov]   (pan + = left, fov diagonal)
    links = [pan, target room, arrival view in target, distance to the next position in m] */
@@ -32,8 +32,8 @@ export const ROOMS: Record<RoomId, { view: ViewTuple; links: RoomLink[] }> = {
 
 export const ROOM_ORDER: RoomId[] = ['node1', 'node2', 'node5', 'node6', 'node7', 'node8', 'node4', 'node9', 'node10', 'node11', 'node12', 'node13', 'node14', 'node15', 'node16', 'node17'];
 
-/** Same room and view as the hero poster (public/assets/img/tour/hero-360*.jpg), so the hand-off is seamless. */
-export const HERO_VIEW: View & { room: RoomId } = { room: 'node16', pan: 172, tilt: -2, fov: 100 };
+/** Where the tour opens: the entrance, at its arrival view. */
+export const START_VIEW: View & { room: RoomId } = { room: 'node1', pan: 44.08, tilt: -3.72, fov: 100 };
 
 export const roomPhoto = (id: RoomId, size: '2k' | '4k' | '6k') => `/assets/tour/rooms/${id}-${size}.jpg`;
 export const roomThumb = (id: RoomId) => `/assets/tour/thumbs/${id}.jpg`;

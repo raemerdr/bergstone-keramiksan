@@ -1,7 +1,7 @@
 'use client';
 /* Scroll reveals and line-by-line headline entrances.
    The CSS only hides content while <html> has `.js` (set by the boot script in app/layout.tsx), and that
-   script drops `.js` again if the app never reports `is-ready` — so content stays visible without JS.
+   script drops `.js` again if the app never reports `is-ready`, so content stays visible without JS.
    Everything waits for the web fonts, so headline line breaks are measured with the final typography. */
 import { Fragment, useEffect, useLayoutEffect, useRef, useState, type HTMLAttributes, type RefObject } from 'react';
 import { cx, idx } from '@/lib/ui';

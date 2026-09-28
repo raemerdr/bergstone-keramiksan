@@ -13,7 +13,7 @@ function saveLang(lang: Lang) {
   document.cookie = `${LANG_COOKIE}=${lang}; path=/; max-age=31536000; samesite=lax`;
 }
 
-/** Floating DE/EN switch — rendered by `next dev` only (see lib/i18n/server.ts). */
+/** Floating DE/EN switch, rendered by `next dev` only (see lib/i18n/server.ts). */
 export function DevBar({ label }: { label: string }) {
   const router = useRouter();
   const current = useLang();

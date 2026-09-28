@@ -1,4 +1,5 @@
-/* Bergstone Keramiksan — contact details, external links and shared photos. */
+/* Bergstone Keramiksan: contact details, external links and shared photos. */
+import type { MessageKey } from './i18n';
 
 export const SITE = {
   name: 'Bergstone Keramiksan',
@@ -9,6 +10,8 @@ export const SITE = {
   address: 'Notwendestraße 2, 67071 Ludwigshafen',
   maps: 'https://www.google.com/maps/search/?api=1&query=Notwendestra%C3%9Fe%202%2C%2067071%20Ludwigshafen',
   instagram: 'https://www.instagram.com/keramik.san/',
+  // Google Maps finds the business at this address and opens its reviews
+  googleReviews: 'https://www.google.com/maps/search/?api=1&query=Keramiksan%2C%20Notwendestra%C3%9Fe%202%2C%2067071%20Ludwigshafen',
   facebook: 'https://www.facebook.com/Keramiksan',
   tiktok: 'https://www.tiktok.com/@keramik.san',
 };
@@ -17,26 +20,23 @@ export const SITE = {
 export const UPLOADS = 'https://keramiksan.de/wp-content/uploads/';
 const upload = (path: string) => `${UPLOADS}${path}`;
 
-export const CATALOGS = {
-  tiles: upload('2024/11/KERAMIKSAN-FLIESEN-KATALOG.pdf'),
-  quartz: upload('2024/11/KERAMIKSAN-QUARTZ-CATALOG.pdf'),
-  dexstone: upload('2025/02/Dex_Stone_Katalog_30kasim_revize-2.pdf'),
-  pamesa: upload('2025/02/Pamesa-Genel-2025-1.pdf'),
-  tilesCover: upload('2024/11/1.jpg'),
-  quartzCover: upload('2024/11/2.jpg'),
-};
+/** The catalogues on /kataloge. `file` lives in keramiksan.de/wp-content/uploads; `mb` is its size. */
+export const CATALOGS = [
+  { id: 'fliesen', title: 'cat.pdf.tiles', file: '2024/11/KERAMIKSAN-FLIESEN-KATALOG.pdf', mb: 26, cover: '/assets/img/catalogs/fliesen.jpg' },
+  { id: 'quarz', title: 'cat.pdf.quartz', file: '2024/11/KERAMIKSAN-QUARTZ-CATALOG.pdf', mb: 64, cover: '/assets/img/catalogs/quarz.jpg' },
+  { id: 'dexstone', title: 'cat.pdf.dexstone', file: '2025/02/Dex_Stone_Katalog_30kasim_revize-2.pdf', mb: 97, cover: '/assets/img/catalogs/dexstone.jpg' },
+  { id: 'pamesa', title: 'cat.pdf.pamesa', file: '2025/02/Pamesa-Genel-2025-1.pdf', mb: 70, cover: '/assets/img/catalogs/pamesa.jpg' },
+] as const satisfies readonly { id: string; title: MessageKey; file: string; mb: number; cover: string }[];
+export type Catalog = (typeof CATALOGS)[number];
+/** Same-origin path (rewritten to keramiksan.de in next.config.ts), so `download` works. */
+export const catalogDownload = (catalog: Catalog) => `/downloads/${catalog.file}`;
+/** File name the browser saves the PDF under. */
+export const catalogFileName = (catalog: Catalog) => `Bergstone-Keramiksan-${catalog.id}-Katalog.pdf`;
 
-/** Project photos (kitchens, bathrooms, stairs) used across the pages. */
+/** Project photos from keramiksan.de (the two-audiences cards on the homepage). */
 export const PHOTO = {
-  kitchen: upload('2021/09/WhatsApp-Image-2025-02-19-at-16.13.23-768x1024.jpeg'),
   stairs: upload('2021/09/r__0001_referenz_9.jpg'),
-  bath: upload('2021/09/r__0006_referenz_4.jpg'),
-  hall: upload('2021/09/r__0007_referenz_3.jpg'),
-  shower: upload('2021/09/r__0008_Ebene-0.jpg'),
-  tub: upload('2021/09/r__0000_referenz_2-1.jpg'),
-  slide2: upload('2021/08/slide2.jpg'),
   slide3: upload('2021/08/slide3.jpg'),
-  slider1: upload('2021/08/sliderkeramik1.jpg'),
 };
 
 export const BRAND = {
@@ -47,9 +47,7 @@ export const BRAND = {
 /** Fallback for browsers without WebGL2: the hosted Pano2VR tour. Deep link format: #node,pan,tilt,fov */
 export const HOSTED_TOUR = {
   url: 'https://cdn2.3dwisemedia.com/2026/BERGSTONEKERAMIKSAN/',
-  // Same node/pan/tilt as the hero poster (rendered at FOV 100). The poster pushes in to scale 1.08
-  // while loading, which equals FOV 2·atan(tan(50°)/1.08) ≈ 95.6 — so the live tour lands on the same frame.
-  view: 'node16,172,-2,95.6',
+  view: 'node1,44.08,-3.72,100',   // the entrance, like the in-house tour (START_VIEW in lib/tour/rooms.ts)
   settleMs: 5000,   // measured: the tour's fly-in intro lands ~4.9 s after its load event
   maxWaitMs: 12000, // reveal anyway on slow connections
 };

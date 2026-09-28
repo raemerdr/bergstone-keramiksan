@@ -4,7 +4,8 @@
 
 Reads   assets/public/360 Bilder/{n}.jpg  (equirectangular, 7680×3840; not in git)
 Writes  public/assets/tour/rooms/node{n}-{2k,4k,6k}.jpg, public/assets/tour/thumbs/node{n}.jpg,
-        public/assets/img/tour/hero-360*.jpg and the showroom stills.
+        and the showroom stills (public/assets/img/tour/). The homepage hero images there
+        (hero-360*.jpg) are not built here: they are a generated picture of the reception.
 Projection matches lib/tour/pano-viewer.ts: pan + = turn left, tilt + = up, fov = diagonal.
 To add a room: add its arrival view to ENTRY here, its links to ROOMS in lib/tour/rooms.ts
 and its name (room.node{n}) to lib/i18n/de.ts and en.ts.
@@ -28,7 +29,6 @@ ENTRY = {  # arrival view per room (from the tour's link targets); node1 = tour 
     'node14': (-173.9, -4.9, 100), 'node15': (-101.9, -2.6, 100), 'node16': (156.9, -2.9, 100),
     'node17': (-98.9, -9.2, 100),
 }
-HERO = ('node16', 172.0, -2.0, 100.0)
 
 
 def render(equi, pan, tilt, fov, W, H):
@@ -75,7 +75,7 @@ def build_room(node):
         path = f'{OUT}/rooms/{node}-{label}.jpg'
         src.resize((w, w // 2), Image.LANCZOS).save(path, quality=q, optimize=True)
         sizes[label] = round(os.path.getsize(path) / 1e6, 2)
-    # thumbnail at the arrival view (from the 2k — plenty for 320 px)
+    # thumbnail at the arrival view (from the 2k, plenty for 320 px)
     equi2k = np.asarray(Image.open(f'{OUT}/rooms/{node}-2k.jpg').convert('RGB'), dtype=np.float32)
     pan, tilt, fov = ENTRY[node]
     view(equi2k, pan, tilt, fov, 320, 200, ss=2).save(f'{OUT}/thumbs/{node}.jpg', quality=80, optimize=True)
@@ -83,14 +83,8 @@ def build_room(node):
 
 
 def build_stills():
-    """Hero posters + showroom stills straight from the 8K originals."""
+    """Showroom stills straight from the 8K originals."""
     out = {}
-    equi = np.asarray(Image.open(f'{SRC}/16.jpg').convert('RGB'), dtype=np.float32)
-    _, pan, tilt, fov = HERO
-    view(equi, pan, tilt, fov, 2100, 1020, ss=2).save(f'{STILLS}/hero-360.jpg', quality=82, optimize=True, progressive=True)
-    view(equi, pan, tilt, fov, 780, 1440, ss=2).save(f'{STILLS}/hero-360-mobile.jpg', quality=80, optimize=True, progressive=True)
-    out['hero'] = 'ok'
-    del equi
     equi = np.asarray(Image.open(f'{SRC}/4.jpg').convert('RGB'), dtype=np.float32)
     view(equi, 0, -2, 100, 1260, 1040, ss=2).save(f'{STILLS}/showroom-lounge.jpg', quality=80, optimize=True, progressive=True)
     del equi

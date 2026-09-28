@@ -1,4 +1,4 @@
-/* Bergstone Keramiksan — in-house 360° panorama viewer (WebGL2, no dependencies).
+/* Bergstone Keramiksan: in-house 360° panorama viewer (WebGL2, no dependencies).
    A full-screen triangle; the fragment shader turns every pixel into a view ray and samples
    the equirectangular photo, so the projection is exact and there is no sphere mesh or seam.
    Angles follow the tour data: pan + = turn left, tilt + = up, fov = diagonal, in degrees. */
@@ -118,8 +118,6 @@ export class PanoViewer {
   tweens = new Set<Tween>();
   pointers = new Map<number, { x: number; y: number }>();
   velocity = { pan: 0, tilt: 0 };
-  autorotate = { speed: -2.4, delay: 4000 };   // deg/s, idle ms
-  lastInput = performance.now();
   running = false;
   interactive = true;
   raf = 0;
@@ -128,7 +126,6 @@ export class PanoViewer {
   cssH = 1;
   dirty = false;
   lost = false;
-  idleTimer: ReturnType<typeof setTimeout> | undefined;
   pinch: { dist: number; fov: number } | null = null;
   resizeObserver: ResizeObserver;
 
@@ -322,7 +319,6 @@ export class PanoViewer {
   /* ---------- Loop ---------- */
   start() {
     this.running = true;
-    this.lastInput = performance.now();
     this.resize();
     this.invalidate();
   }
@@ -331,7 +327,6 @@ export class PanoViewer {
     this.running = false;
     cancelAnimationFrame(this.raf);
     this.raf = 0;
-    clearTimeout(this.idleTimer);
   }
 
   invalidate() { this.dirty = true; this.#request(); }
@@ -373,10 +368,6 @@ export class PanoViewer {
         const decay = Math.exp(-dt * 5);
         this.velocity.pan *= decay;
         this.velocity.tilt *= decay;
-        active = true;
-      } else if (this.interactive && !this.tweens.size && !reduceMotion() && now - this.lastInput > this.autorotate.delay) {
-        cam.pan += this.autorotate.speed * dt;
-        cam.tilt += (0 - cam.tilt) * Math.min(1, dt * 0.6);   // drift back to the horizon
         active = true;
       }
       cam.tilt = clamp(cam.tilt, -85, 85);
@@ -428,9 +419,6 @@ export class PanoViewer {
 
   /* ---------- Input ---------- */
   #touch() {
-    this.lastInput = performance.now();
-    clearTimeout(this.idleTimer);
-    this.idleTimer = setTimeout(() => this.#request(), this.autorotate.delay + 50);
     this.onInteract?.();
   }
 

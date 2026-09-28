@@ -1,5 +1,5 @@
 'use client';
-/* Homepage hero ⇄ live 360° tour. The poster is a frame of the tour; starting it swaps the poster for the
+/* Homepage hero ⇄ live 360° tour. Starting it swaps the poster for the tour at the entrance: the
    in-house WebGL viewer (lib/tour, loaded on intent) or, without WebGL2, the hosted Pano2VR tour. */
 import { createContext, use, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { flushSync } from 'react-dom';
@@ -146,7 +146,7 @@ export function HeroTour({ alt, children }: { alt: string; children: ReactNode }
       if (instance) {
         setPano(true);
         try {
-          // Opens on the poster's exact view, so the cross-fade is seamless
+          // Opens at the entrance; the poster cross-fades into it
           if (await instance.open()) { if (id === session) reveal(); return; }
         } catch (err) {
           console.warn('[tour]', err);
@@ -279,7 +279,7 @@ export function HeroTour({ alt, children }: { alt: string; children: ReactNode }
         <div className="hero__media">
           <picture>
             <source media="(max-width: 699px)" srcSet="/assets/img/tour/hero-360-mobile.jpg" width={780} height={1440} />
-            <img ref={poster} src="/assets/img/tour/hero-360.jpg" width={2100} height={1020} fetchPriority="high" alt={alt} />
+            <img ref={poster} src="/assets/img/tour/hero-360.jpg" width={2100} height={1180} fetchPriority="high" alt={alt} />
           </picture>
         </div>
         <div className="hero__tour">
@@ -307,7 +307,6 @@ export function HeroTour({ alt, children }: { alt: string; children: ReactNode }
         <div className="pano-ui" role="toolbar" aria-label={t('pano.controls')}>
           <button className="pano-btn" type="button" aria-label={t('pano.zoomOut')} onClick={() => tour.current?.zoomBy(1.28)}><Icon name="minus" /></button>
           <button className="pano-btn" type="button" aria-label={t('pano.zoomIn')} onClick={() => tour.current?.zoomBy(0.78)}><Icon name="plus" /></button>
-          <span className="pano-ui__sep" aria-hidden="true" />
           <button ref={roomsButton} className="pano-btn pano-btn--text" type="button" aria-expanded={roomsOpen} aria-controls="pano-rooms" onClick={() => setRoomsOpen((open) => !open)}>
             <Icon name="grid" /><span>{t('pano.rooms')}</span>
           </button>

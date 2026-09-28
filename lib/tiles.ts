@@ -1,4 +1,4 @@
-/* Bergstone Keramiksan — tile catalogue.
+/* Bergstone Keramiksan: tile catalogue.
    Names, formats, finishes and face counts were read from the product labels on the client's
    tile photos (current site, /fliesen/). Two duplicate photos were dropped (Sivas Silver, Cristela Crema).
    `kinds` drives the filters on /fliesen and is PROVISIONAL until the product list arrives:
@@ -6,23 +6,25 @@
      bodenfliesen = matt or carving finish, or a square format
      grossformate = longest side ≥ 100 cm
      steinplatten = none yet (the 8 slabs are still to come)
-   finish: matt | glossy | highgloss | carving   ·   size: [width, height] in cm */
+     kueche       = natural stone slabs for kitchen worktops (WORKTOPS below; not part of "alle")
+   finish: matt | glossy | highgloss | carving | polished   ·   size: [width, height] in cm, null when cut to size */
+import type { MessageKey } from './i18n';
 
-export type Finish = 'matt' | 'glossy' | 'highgloss' | 'carving';
-export type TileKind = 'wandfliesen' | 'bodenfliesen' | 'grossformate' | 'steinplatten';
+export type Finish = 'matt' | 'glossy' | 'highgloss' | 'carving' | 'polished';
+export type TileKind = 'wandfliesen' | 'bodenfliesen' | 'grossformate' | 'steinplatten' | 'kueche';
 export type TileFilter = 'alle' | TileKind;
 
 export interface Tile {
   id: string;
   name: string;
-  size: [number, number];
+  size: [number, number] | null;
   finish: Finish;
   faces: number | null;
   kinds: TileKind[];
   img: string;
 }
 
-export const TILES: Tile[] = [
+const CERAMIC_TILES: Tile[] = [
   { id: 'anty-sky-white', name: 'Anty Sky White', size: [120, 120], finish: 'glossy', faces: 3, kinds: ['wandfliesen', 'bodenfliesen', 'grossformate'], img: 'IMG_9894' },
   { id: 'ashwin-black', name: 'Ashwin Black', size: [60, 120], finish: 'matt', faces: 6, kinds: ['bodenfliesen', 'grossformate'], img: 'IMG_9898' },
   { id: 'ashwin-anthrazit', name: 'Ashwin Anthrazit', size: [60, 120], finish: 'matt', faces: 6, kinds: ['bodenfliesen', 'grossformate'], img: 'IMG_9897' },
@@ -79,15 +81,48 @@ export const TILES: Tile[] = [
   { id: 'onix-white', name: 'Onix White', size: [60, 120], finish: 'glossy', faces: 8, kinds: ['wandfliesen', 'grossformate'], img: 'IMG_9977' },
 ];
 
-export const TILE_FILTERS: TileFilter[] = ['alle', 'wandfliesen', 'bodenfliesen', 'grossformate', 'steinplatten'];
+/** Natural stone slabs for kitchen worktops, photographed on the rack; no names or sizes yet, so they are
+    numbered. Photos: assets/kitchen-tops → tools/build-worktops.mjs → public/assets/img/tiles/arbeitsplatte-NN.jpg */
+const WORKTOP_COUNT = 96;
+const WORKTOPS: Tile[] = Array.from({ length: WORKTOP_COUNT }, (_, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  return { id: `arbeitsplatte-${n}`, name: `Arbeitsplatte ${n}`, size: null, finish: 'polished', faces: null, kinds: ['kueche'], img: `arbeitsplatte-${n}` };
+});
+
+export const TILES: Tile[] = [...CERAMIC_TILES, ...WORKTOPS];
+
+export const TILE_FILTERS: TileFilter[] = ['alle', 'wandfliesen', 'bodenfliesen', 'grossformate', 'steinplatten', 'kueche'];
+
+export const FILTER_LABELS: Record<TileFilter, MessageKey> = {
+  alle: 'cat.all',
+  wandfliesen: 'cat.wall',
+  bodenfliesen: 'cat.floor',
+  grossformate: 'cat.large',
+  steinplatten: 'cat.slabs',
+  kueche: 'cat.kitchen',
+};
 
 /** The homepage carousel ("Beliebte Fliesen"). */
 export const FEATURED_TILES = ['ashwin-black', 'ashwin-anthrazit', 'ashwin-latte', 'concrete-grey', 'concrete-white', 'esterda-latte', 'segate-white', 'anty-sky-white'];
 
 export const tileById = new Map(TILES.map((tile) => [tile.id, tile]));
 
-/** Catalogue photos (label strip on top; the CSS `.is-tile` crop hides it). */
-export const tilePhoto = (img: string) => `https://keramiksan.de/wp-content/uploads/2024/07/${img}.jpg`;
-export const tileSize = (tile: Tile) => `${tile.size[0]} × ${tile.size[1]} cm`;
-export const matchesFilter = (tile: Tile, filter: TileFilter) => filter === 'alle' || tile.kinds.includes(filter);
+/** Tile surface only, cropped from the catalogue photos by tools/build-tiles.mjs (about 500 × 500 px, single faces 236 × 492). */
+export const tilePhoto = (img: string) => `/assets/img/tiles/${img}.jpg`;
+export const tileSize = (tile: Tile) => (tile.size ? `${tile.size[0]} × ${tile.size[1]} cm` : '');
+export const isWorktop = (tile: Tile) => tile.kinds.includes('kueche');
+export const tileHref = (tile: Tile) => `/fliesen/${tile.id}`;
+export const matchesFilter = (tile: Tile, filter: TileFilter) => (filter === 'alle' ? !isWorktop(tile) : tile.kinds.includes(filter));
 export const parseFilter = (value: string | null): TileFilter => TILE_FILTERS.find((f) => f === value) ?? 'alle';
+
+/** Tiles to suggest next to one: the same series first (shared first word, e.g. "Ashwin"), then same finish and format. */
+export function similarTiles(tile: Tile, limit = 4) {
+  const series = (t: Tile) => t.name.split(' ')[0];
+  const score = (other: Tile) =>
+    (series(other) === series(tile) ? 4 : 0) +
+    (other.finish === tile.finish ? 2 : 0) +
+    (tile.size && other.size?.join() === tile.size.join() ? 1 : 0);
+  return TILES.filter((other) => other !== tile && score(other) > 0)
+    .sort((a, b) => score(b) - score(a))   // stable: catalogue order within the same score
+    .slice(0, limit);
+}

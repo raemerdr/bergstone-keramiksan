@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { Figtree, Fraunces } from 'next/font/google';
+import { Figtree } from 'next/font/google';
+import localFont from 'next/font/local';
 import { preconnect } from 'react-dom';
 import { DevBar } from '@/components/dev-bar';
 import { DialogProvider } from '@/components/dialogs';
@@ -17,7 +18,8 @@ import { UPLOADS } from '@/lib/site';
 import './globals.css';
 
 const figtree = Figtree({ subsets: ['latin', 'latin-ext'], variable: '--font-figtree' });   // latin-ext: "DANIŞMANLIK"
-const fraunces = Fraunces({ subsets: ['latin'], axes: ['SOFT', 'opsz'], variable: '--font-fraunces' });
+// Headings: Mediqa (regular only; the source files are in assets/fonts)
+const mediqa = localFont({ src: './fonts/mediqa-regular.woff2', weight: '400', style: 'normal', variable: '--font-mediqa' });
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -36,7 +38,7 @@ export default async function RootLayout({ children }: LayoutProps<'/'>) {
   preconnect(new URL(UPLOADS).origin);
 
   return (
-    <html lang={lang} className={`${figtree.variable} ${fraunces.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang={lang} className={`${figtree.variable} ${mediqa.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
       </head>

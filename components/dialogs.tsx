@@ -1,9 +1,9 @@
 'use client';
-/* Drawers (catalogues, wishlist, mobile menu): native <dialog> + showModal, slide-in via `.is-open`. */
+/* Drawers (the mobile menu): native <dialog> + showModal, slide-in via `.is-open`. */
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type DialogHTMLAttributes, type MouseEvent, type ReactNode } from 'react';
 import { cx, prefersReducedMotion } from '@/lib/ui';
 
-export type DialogId = 'catalogs' | 'saved' | 'menu';
+export type DialogId = 'menu';
 
 interface DrawerHandle {
   element(): HTMLDialogElement | null;

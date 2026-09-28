@@ -1,9 +1,9 @@
-/* Bergstone Keramiksan — 360° showroom tour: hotspots and room changes on top of PanoViewer.
-   Loaded on intent (hover/focus on a tour trigger). The tour chrome around it — room pill, toolbar,
-   room list, toast — is React (components/home/hero-tour.tsx) and follows the hooks below. */
+/* Bergstone Keramiksan 360° showroom tour: hotspots and room changes on top of PanoViewer.
+   Loaded on intent (hover/focus on a tour trigger). The tour chrome around it (room pill, toolbar,
+   room list, toast) is React (components/home/hero-tour.tsx) and follows the hooks below. */
 import type { ClientKey, Translate } from '@/lib/i18n';
 import { PanoViewer, isSupported } from './pano-viewer';
-import { HERO_VIEW, ROOMS, roomPhoto, type RoomId, type View, type ViewTuple } from './rooms';
+import { ROOMS, START_VIEW, roomPhoto, type RoomId, type View, type ViewTuple } from './rooms';
 
 const EYE_HEIGHT = 1.6;            // metres; puts link markers on the floor
 const DEG = 180 / Math.PI;
@@ -89,12 +89,12 @@ export class ShowroomTour {
       const el = document.createElement('button');
       el.type = 'button';
       el.className = 'pano-spot is-off';
-      const disc = document.createElement('span');
-      disc.className = 'pano-spot__disc';
-      disc.setAttribute('aria-hidden', 'true');
+      const arrow = document.createElement('span');
+      arrow.className = 'pano-spot__arrow';
+      arrow.setAttribute('aria-hidden', 'true');
       const label = document.createElement('span');
       label.className = 'pano-spot__label';
-      el.append(disc, label);
+      el.append(arrow, label);
       el.addEventListener('click', () => this.go(target, { from: { pan, tilt }, arrival }));
       // Keyboard users: bring an off-screen marker into view when it receives focus
       el.addEventListener('focus', () => {
@@ -163,11 +163,11 @@ export class ShowroomTour {
   }
 
   /* ---------- Public API ---------- */
-  /** Warm-up on intent: fetch and upload the hero room before the click. */
-  prefetch() { this.viewer.texture(this.src(HERO_VIEW.room)).catch(() => {}); }
+  /** Warm-up on intent: fetch and upload the entrance before the click. */
+  prefetch() { this.viewer.texture(this.src(START_VIEW.room)).catch(() => {}); }
 
-  /** Resolves once the hero room is on screen at the poster's exact view. */
-  async open(view = HERO_VIEW) {
+  /** Resolves once the entrance (or the given view) is on screen. */
+  async open(view = START_VIEW) {
     this.host.replaceChildren(this.canvas, this.spotLayer);
     this.isOpen = true;
     this.viewer.interactive = true;
