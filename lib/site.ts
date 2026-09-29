@@ -33,6 +33,24 @@ export const catalogDownload = (catalog: Catalog) => `/downloads/${catalog.file}
 /** File name the browser saves the PDF under. */
 export const catalogFileName = (catalog: Catalog) => `Bergstone-Keramiksan-${catalog.id}-Katalog.pdf`;
 
+/** Legal details for the legal notice and the privacy policy, as in the legal notice on keramiksan.de. */
+export const COMPANY = {
+  name: 'Keramiksan GmbH',
+  street: 'Notwendestraße 2',
+  city: '67071 Ludwigshafen',
+  representative: 'Asiye Boztas',
+  court: 'Amtsgericht Ludwigshafen',
+  register: 'HRB 68610',
+  vatId: 'DE 339001287',
+};
+
+/** Agency credit in the footer, in English on every language version. */
+export const CREDIT = {
+  label: 'Site made by',
+  name: 'nüll.',
+  url: 'https://xn--nll-hoa.com/',
+};
+
 /** Project photos from keramiksan.de (the two-audiences cards on the homepage). */
 export const PHOTO = {
   stairs: upload('2021/09/r__0001_referenz_9.jpg'),

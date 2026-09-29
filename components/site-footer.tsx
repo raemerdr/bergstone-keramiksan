@@ -3,7 +3,7 @@ import { Icon } from '@/components/icons';
 import { TourLink } from '@/components/tour-triggers';
 import { WaLink } from '@/components/wa-link';
 import { getT } from '@/lib/i18n/server';
-import { BRAND, SITE } from '@/lib/site';
+import { BRAND, CREDIT, SITE } from '@/lib/site';
 
 export async function SiteFooter() {
   const t = await getT();
@@ -50,8 +50,9 @@ export async function SiteFooter() {
           <ul>
             <li><NavLink href="/#showroom">{t('footer.aboutLink')}</NavLink></li>
             <li><NavLink href="/#bewertungen">{t('nav.refs')}</NavLink></li>
+            <li><NavLink href="/blog">{t('nav.blog')}</NavLink></li>
             <li><NavLink href="/#profis">{t('nav.pro')}</NavLink></li>
-            <li><a href="#kontakt">{t('footer.contact')}</a></li>
+            <li><NavLink href="/kontakt">{t('footer.contact')}</NavLink></li>
           </ul>
         </nav>
         <nav className="footer__col" aria-labelledby="f-social">
@@ -64,10 +65,14 @@ export async function SiteFooter() {
         </nav>
       </div>
       <div className="container footer__bottom">
-        <p>© 2026 Bergstone Keramiksan GmbH · Uicons by <a href="https://www.flaticon.com/uicons" target="_blank" rel="noopener">Flaticon</a></p>
+        <p>© 2026 Bergstone Keramiksan GmbH</p>
+        <p className="footer__credit" lang="en">
+          {CREDIT.label}{' '}
+          <a href={CREDIT.url} target="_blank" rel="noopener noreferrer">{CREDIT.name}<span className="visually-hidden"> {t('a11y.newTab')}</span></a>
+        </p>
         <ul>
-          <li><a href="#top">{t('footer.imprint')}</a></li>
-          <li><a href="#top">{t('footer.privacy')}</a></li>
+          <li><NavLink href="/impressum">{t('footer.imprint')}</NavLink></li>
+          <li><NavLink href="/datenschutz">{t('footer.privacy')}</NavLink></li>
         </ul>
       </div>
     </footer>

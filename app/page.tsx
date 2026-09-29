@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { preconnect, preload } from 'react-dom';
+import { preload } from 'react-dom';
 import { Carousel, CarouselButton, CarouselTrack } from '@/components/carousel';
 import { Faq } from '@/components/faq';
 import { HeroTitle, HeroTour } from '@/components/home/hero-tour';
@@ -14,7 +14,7 @@ import type { MessageKey } from '@/lib/i18n';
 import { fill, lines } from '@/lib/i18n';
 import { getLang, getT } from '@/lib/i18n/server';
 import { REVIEW_SUMMARY, REVIEWS } from '@/lib/reviews';
-import { BRAND, CATALOGS, HOSTED_TOUR, PHOTO, SITE } from '@/lib/site';
+import { BRAND, CATALOGS, PHOTO, SITE } from '@/lib/site';
 import { FEATURED_TILES, tileById, tilePhoto, type Tile } from '@/lib/tiles';
 import { idx, pos, stagger } from '@/lib/ui';
 import type { WaTopic } from '@/lib/whatsapp';
@@ -79,7 +79,6 @@ export default async function Home() {
   const month = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { month: 'long', year: 'numeric' });
   preload('/assets/img/tour/hero-360.jpg', { as: 'image', media: '(min-width: 700px)', fetchPriority: 'high' });
   preload('/assets/img/tour/hero-360-mobile.jpg', { as: 'image', media: '(max-width: 699px)', fetchPriority: 'high' });
-  preconnect(new URL(HOSTED_TOUR.url).origin);
   const conf = stagger();
   const story = stagger();
 
@@ -149,11 +148,11 @@ export default async function Home() {
               </Link>
             </li>
             <li style={conf()}>
-              <a className="conf-card" href="#kontakt">
+              <Link className="conf-card" href="/kontakt">
                 <span className="media media--2x3"><Img photo={advice('showroom')} /></span>
                 <h3 className="conf-card__title">{t('showroom.eyebrow')}</h3>
                 <span className="link">{t('conf.showroom.link')}</span>
-              </a>
+              </Link>
             </li>
             <li style={conf()}>
               <Link className="conf-card" href="/verlegung-montage">

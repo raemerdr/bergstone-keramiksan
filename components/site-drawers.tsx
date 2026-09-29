@@ -42,10 +42,11 @@ export async function SiteDrawers() {
                 </ul>
               </li>
               <li style={menu()}><NavLink href="/kataloge">{t('nav.catalogs')}</NavLink></li>
+              <li style={menu()}><NavLink href="/blog">{t('nav.blog')}</NavLink></li>
               <li style={menu()}><NavLink href="/#profis">{t('nav.pro')}</NavLink></li>
               <li style={menu()}><NavLink href="/#bewertungen">{t('nav.refs')}</NavLink></li>
               <li style={menu()}><NavLink href="/#showroom">{t('nav.showroom')}</NavLink></li>
-              <li style={menu()}><a href="#kontakt">{t('footer.contact')}</a></li>
+              <li style={menu()}><NavLink href="/kontakt">{t('footer.contact')}</NavLink></li>
             </ul>
           </nav>
           <div className="drawer__foot menu-contact">

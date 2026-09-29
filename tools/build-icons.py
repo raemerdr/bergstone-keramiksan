@@ -1,5 +1,5 @@
 """Build the icons from Flaticon Uicons: the sprite's <symbol>s (components/icons.tsx) and the
-service pages' feature icons (components/feature-icon.tsx).
+thin icons of the service and contact pages (components/feature-icon.tsx).
 
     npm pack @flaticon/flaticon-uicons@3.3.1 && tar -xzf flaticon-flaticon-uicons-3.3.1.tgz
     python3 -m pip install fonttools
@@ -14,7 +14,8 @@ of the icon fonts (~730 KB).
   components/feature-icon.tsx. They are inlined only where they are used, not added to the sprite
   that every page carries.
 Browse the names at https://www.flaticon.com/uicons.
-Licence: free with the credit "Uicons by Flaticon" (site footer), or without it on a Premium plan.
+Licence: free with the credit "Uicons by Flaticon" (on this site: the image credits in the legal notice,
+app/impressum), or without it on a Premium plan.
 """
 import pathlib
 import re
@@ -44,6 +45,7 @@ ICONS = {
     'facebook': ('brands', 'facebook'),
     'tiktok': ('brands', 'tik-tok'),
     'download': ('rr', 'download'),
+    'pin': ('rr', 'marker'),
     'mail': ('rr', 'envelope'),
     '360': ('rr', '360-degrees'),
     'plus': ('rr', 'plus-small'),
@@ -73,6 +75,11 @@ FEATURE_ICONS = {
     'bucket': ('tr', 'bucket'),
     'tools': ('tr', 'tools'),
     'camera': ('tr', 'camera'),
+    # contact page
+    'chat': ('tr', 'comments'),
+    'phone': ('tr', 'phone-call'),
+    'mail': ('tr', 'envelope-open'),
+    'pin': ('tr', 'map-pin'),
 }
 EM = 300  # Uicons: 300 units per em, ascent 300, descent 0
 

@@ -83,9 +83,11 @@ export async function SiteHeader() {
             </MegaItem>
 
             <li className="nav__item"><NavLink className="nav__link" href="/kataloge">{t('nav.catalogs')}</NavLink></li>
+            <li className="nav__item"><NavLink className="nav__link" href="/blog">{t('nav.blog')}</NavLink></li>
             <li className="nav__item"><NavLink className="nav__link" href="/#profis">{t('nav.pro')}</NavLink></li>
             <li className="nav__item"><NavLink className="nav__link" href="/#bewertungen">{t('nav.refs')}</NavLink></li>
             <li className="nav__item"><NavLink className="nav__link" href="/#showroom">{t('nav.showroom')}</NavLink></li>
+            <li className="nav__item"><NavLink className="nav__link" href="/kontakt">{t('footer.contact')}</NavLink></li>
           </ul>
         </nav>
 
