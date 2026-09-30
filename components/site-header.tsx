@@ -6,7 +6,6 @@ import { TourLink } from '@/components/tour-triggers';
 import { WaLink } from '@/components/wa-link';
 import { getT } from '@/lib/i18n/server';
 import { BRAND, CATALOGS, SITE, catalogDownload, catalogFileName } from '@/lib/site';
-import { tilePhoto } from '@/lib/tiles';
 import { SERVICES } from '@/lib/services';
 import { stagger } from '@/lib/ui';
 
@@ -67,7 +66,7 @@ export async function SiteHeader() {
                 </ul>
               </div>
               <NavLink className="mega__promo" href="/fliesen" style={tiles()}>
-                <span className="media media--4x3"><img src={tilePhoto('IMG_9913')} alt="" loading="lazy" /></span>
+                <span className="media media--4x3"><img src="/assets/img/mega/favourites.jpg" alt="" loading="lazy" /></span>
                 <span className="mega__promo-label">{t('best.title')}</span>
               </NavLink>
               <TourLink className="mega__promo" style={tiles()}>

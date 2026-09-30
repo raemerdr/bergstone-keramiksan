@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Link } from '@/components/link';
 import { Reveal, SplitHeading } from '@/components/motion';
 import { PostCard } from '@/components/post-card';
-import { TilesHelp } from '@/components/tiles-help';
 import { POSTS } from '@/lib/blog';
 import { getLang, getT } from '@/lib/i18n/server';
 import { idx } from '@/lib/ui';
@@ -33,8 +32,6 @@ export default async function BlogPage() {
           {POSTS.map((post, i) => <PostCard key={post.slug} post={post} lang={lang} t={t} style={idx(i)} />)}
         </Reveal>
       </section>
-
-      <TilesHelp />
     </main>
   );
 }

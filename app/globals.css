@@ -9,9 +9,9 @@
 
 :root {
   /* Colour */
-  --bg: #ffffff;
+  --bg: #fbf9f5;               /* page: the same warm cream as the header */
   --bg-soft: #f6f3ee;          /* limestone band */
-  --cream: #fbf9f5;            /* header, its menus and the slim filter bar: a touch warmer than white */
+  --cream: #fbf9f5;            /* header, its menus, the drawer and the slim filter bar: a touch warmer than white */
   --bg-dark: #24211e;          /* anthracite: pro band */
   --bg-black: #0f0e0d;         /* warm near-black: footer */
   --ink: #1d1b18;
@@ -306,7 +306,7 @@ svg { width: 1em; height: 1em; flex: none; }
   height: min(100svh, calc(66vw + var(--header-h))); min-height: calc(560px + var(--header-h)); max-height: calc(1100px + var(--header-h)); width: 100%;
   overflow: hidden; background: var(--bg);
 }
-/* Picture and wash fade out at the foot, so the hero runs into the white section below without an edge */
+/* Picture and wash fade out at the foot, so the hero runs into the section below without an edge */
 .hero__media { position: absolute; inset: 0; mask-image: linear-gradient(180deg, #000 calc(100% - 200px), transparent 100%); }
 .hero__media picture { display: block; width: 100%; height: 100%; }
 /* --push zooms the poster in while the tour loads */
@@ -822,7 +822,7 @@ svg { width: 1em; height: 1em; flex: none; }
 .page-hero--tiles { position: relative; display: grid; align-items: center; min-height: calc(clamp(480px, 46vw, 660px) + var(--header-h)); padding-bottom: 0; overflow: hidden; background: var(--bg); }
 .tiles-page { --overlap: 64px; }
 .page-hero--tiles .page-hero__inner { position: relative; z-index: 1; padding-block: clamp(40px, 5vw, 72px) calc(clamp(40px, 5vw, 72px) + var(--overlap)); }
-/* Fades out at the foot, behind the type boxes, into the white listing below */
+/* Fades out at the foot, behind the type boxes, into the listing below */
 .tiles-hero-media { position: absolute; inset: 0; z-index: 0; mask-image: linear-gradient(180deg, #000 calc(100% - 220px), transparent 100%); }
 .tiles-hero-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; opacity: 0; transition: opacity .7s ease; }
 .tiles-hero-media img.is-back { z-index: 1; opacity: 1; }
@@ -831,7 +831,7 @@ svg { width: 1em; height: 1em; flex: none; }
 
 /* Tile types as boxes on the lower edge of the intro picture, each with the room it is made for */
 .tile-boxes { position: relative; z-index: 2; margin-top: calc(var(--overlap) * -1); }
-.tile-boxes__grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.tile-boxes__grid { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; }   /* one row, however many filters */
 .tile-box {
   display: flex; flex-direction: column; justify-content: space-between; gap: 20px;
   min-height: 150px; padding: 18px 16px 16px 18px; text-align: left;
@@ -932,10 +932,6 @@ body:has(.header.is-hidden) .tile-filters { top: 0; }
 @media (hover: hover) { .tile-specs a:hover { text-decoration-color: currentColor; } }
 .tile-grid--similar { padding: 0; margin-top: clamp(28px, 3.5vw, 48px); }
 
-.tiles-help__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px 48px; flex-wrap: wrap; }
-.tiles-help__inner p { margin-top: 12px; max-width: 36rem; color: var(--ink-2); }
-.tiles-help__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
-
 /* Service pages: photo-led, centred section titles, one line icon per feature, one photo per step */
 .section-title { max-width: 22em; margin-inline: auto; text-align: center; }
 .section-title .split-line > span { transform-origin: 50% 0; }
@@ -953,7 +949,7 @@ body:has(.header.is-hidden) .tile-filters { top: 0; }
 
 /* Service pages: the photo fills the intro, the copy sits on a limestone wash on its left */
 .svc-hero { position: relative; display: grid; align-items: center; min-height: calc(clamp(540px, 48vw, 720px) + var(--header-h)); overflow: hidden; background: var(--bg); }
-/* The photo fades out at the foot, so the intro runs into the white section below without an edge */
+/* The photo fades out at the foot, so the intro runs into the section below without an edge */
 .svc-hero__media { position: absolute; inset: 0; z-index: 0; margin: 0; mask-image: linear-gradient(180deg, #000 calc(100% - 200px), transparent 100%); }
 .svc-hero__media img { width: 100%; height: 100%; object-fit: cover; animation: media-in 1.3s var(--ease) both; }
 .svc-hero__media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(246, 243, 238, .93) 0%, rgba(246, 243, 238, .8) 34%, rgba(246, 243, 238, 0) 64%); }
@@ -977,7 +973,7 @@ body:has(.header.is-hidden) .tile-filters { top: 0; }
 .icon-col__icon { display: block; width: 56px; height: 56px; margin: 0 auto 24px; color: var(--ink); }
 .icon-col__title { margin-bottom: 12px; font: 400 1.5rem/1.15 var(--font-display); letter-spacing: .02em; }
 .icon-col p { max-width: 20rem; margin-inline: auto; font-size: .9375rem; color: var(--ink-2); }
-/* Process band: the cream fades in from the white section above instead of starting on a hard line */
+/* Process band: the limestone fades in from the section above instead of starting on a hard line */
 .svc-steps { background: linear-gradient(180deg, var(--bg) 0, var(--bg-soft) clamp(140px, 16vw, 240px)); }
 
 /* Process on the service pages: a head row, then the four steps as cards of different sizes
@@ -1125,7 +1121,6 @@ body:has(.header.is-hidden) .tile-filters { top: 0; }
   .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 14px; }
   .tile-grid .product-card__title { font-size: .875rem; }
   .tile-grid .product-card .btn { min-height: 42px; font-size: .875rem; }
-  .tiles-help__actions .btn { flex: 1 1 100%; }
   .media-text__actions .btn { flex: 1 1 100%; }
   .icon-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px 16px; }
   .icon-col__icon { width: 40px; height: 40px; margin-bottom: 16px; }
@@ -1318,7 +1313,7 @@ dialog::backdrop { background: transparent; }
 .drawer__scrim { position: absolute; inset: 0; background: rgba(29, 27, 24, .5); opacity: 0; transition: opacity .4s ease; }
 .drawer__panel {
   position: absolute; top: 0; right: 0; bottom: 0; width: min(440px, 100%);
-  display: flex; flex-direction: column; background: #fff;
+  display: flex; flex-direction: column; background: var(--cream);
   transform: translateX(100%); transition: transform .5s var(--ease);
 }
 .drawer--left .drawer__panel { left: 0; right: auto; transform: translateX(-100%); }
@@ -1441,7 +1436,7 @@ dialog.is-open .drawer__body > ul > li, dialog.is-open .menu-list li { opacity: 
 }
 
 @media (max-width: 699px) {
-  /* Hero: like the service pages, the picture is a band under the header that fades into white and the
+  /* Hero: like the service pages, the picture is a band under the header that fades into the page and the
      copy follows below it (the 360° tour still covers the whole hero) */
   .hero { display: block; height: auto; min-height: 0; max-height: none; padding-top: 0; }
   .hero { transition: min-height .6s var(--ease); }

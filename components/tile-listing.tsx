@@ -11,6 +11,8 @@ import { TILE_FILTERS, TILES, matchesFilter, parseFilter, type TileFilter } from
 import { cx, idx } from '@/lib/ui';
 
 const COUNTS = Object.fromEntries(TILE_FILTERS.map((filter) => [filter, TILES.filter((tile) => matchesFilter(tile, filter)).length]));
+/* Filters without tiles yet (the stone slabs) stay out of the boxes and the bar until some arrive */
+const SHOWN = TILE_FILTERS.filter((filter) => filter === 'alle' || COUNTS[filter] > 0);
 
 export interface TileListingProps {
   labels: Record<TileFilter, string>;
@@ -74,7 +76,7 @@ export function TileListing({ filter, labels, filterLabel, empty }: TileListingP
       <div className="tile-boxes">
         <div className="container">
           <div ref={boxes} className="tile-boxes__grid" role="group" aria-label={filterLabel} data-lenis-prevent-horizontal>
-            {TILE_FILTERS.map((value) => (
+            {SHOWN.map((value) => (
               <button key={value} className="tile-box" type="button" aria-pressed={value === filter} onClick={() => select(value)}>
                 <TileKindIcon kind={value} className="tile-box__icon" />
                 <span className="tile-box__foot">
@@ -90,7 +92,7 @@ export function TileListing({ filter, labels, filterLabel, empty }: TileListingP
       <div className={cx('tile-filters', compact && 'is-shown')} inert={!compact}>
         <div className="container tile-filters__inner">
           <div className="chips" role="group" aria-label={filterLabel} data-lenis-prevent-horizontal>
-            {TILE_FILTERS.map((value) => (
+            {SHOWN.map((value) => (
               <button key={value} className="chip" type="button" aria-pressed={value === filter} onClick={() => select(value)}>
                 <span>{labels[value]}</span><span className="chip__count">{COUNTS[value]}</span>
               </button>

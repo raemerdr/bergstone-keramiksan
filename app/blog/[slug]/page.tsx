@@ -4,7 +4,6 @@ import { Icon } from '@/components/icons';
 import { Link } from '@/components/link';
 import { Reveal, SplitHeading } from '@/components/motion';
 import { PostCard, PostMeta } from '@/components/post-card';
-import { TilesHelp } from '@/components/tiles-help';
 import { POSTS, postBySlug, readingMinutes, type Block } from '@/lib/blog';
 import { getLang, getT } from '@/lib/i18n/server';
 import { SITE } from '@/lib/site';
@@ -91,8 +90,6 @@ export default async function PostPage(props: PageProps<'/blog/[slug]'>) {
           </Reveal>
         </div>
       </section>
-
-      <TilesHelp />
     </main>
   );
 }

@@ -4,7 +4,6 @@ import { Icon } from '@/components/icons';
 import { Link } from '@/components/link';
 import { SplitHeading } from '@/components/motion';
 import { TileListing, TileListingFromUrl, type TileListingProps } from '@/components/tile-listing';
-import { TilesHelp } from '@/components/tiles-help';
 import { TilesHeroMedia, TilesHeroMediaFromUrl } from '@/components/tiles-hero';
 import { WaLink } from '@/components/wa-link';
 import { getT } from '@/lib/i18n/server';
@@ -62,8 +61,6 @@ export default async function TilesPage() {
           <TileListingFromUrl {...listing} />
         </Suspense>
       </section>
-
-      <TilesHelp />
     </main>
   );
 }

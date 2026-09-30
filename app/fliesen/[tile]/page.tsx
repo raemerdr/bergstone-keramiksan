@@ -5,7 +5,6 @@ import { Icon } from '@/components/icons';
 import { Link } from '@/components/link';
 import { Reveal, SplitHeading } from '@/components/motion';
 import { ProductCard } from '@/components/product-card';
-import { TilesHelp } from '@/components/tiles-help';
 import { WaLink } from '@/components/wa-link';
 import { fill } from '@/lib/i18n';
 import { getT } from '@/lib/i18n/server';
@@ -90,8 +89,6 @@ export default async function TilePage(props: PageProps<'/fliesen/[tile]'>) {
           </div>
         </section>
       )}
-
-      <TilesHelp />
     </main>
   );
 }

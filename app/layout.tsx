@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('meta.title'), description: t('meta.description') };
 }
 
-export const viewport: Viewport = { themeColor: '#ffffff' };
+export const viewport: Viewport = { themeColor: '#fbf9f5' };
 
 // Runs before first paint: enables the hidden-until-revealed states, and drops them again
 // if the app never reports `is-ready` (script error, very slow network).
