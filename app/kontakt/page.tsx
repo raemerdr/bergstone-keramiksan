@@ -81,7 +81,7 @@ export default async function ContactPage() {
               </dl>
               <div className="media-text__actions">
                 <a className="btn btn--dark" href={SITE.maps} target="_blank" rel="noopener"><Icon name="pin" /><span>{t('contact.route')}</span></a>
-                <TourLink className="btn btn--light"><Icon name="360" /><span>{t('showroom.cta')}</span></TourLink>
+                <TourLink className="btn btn--light">{t('showroom.cta')}</TourLink>
               </div>
             </div>
           </Reveal>

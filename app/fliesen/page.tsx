@@ -24,7 +24,7 @@ export default async function TilesPage() {
         <p className="tile-empty__title">{t('tiles.empty.title')}</p>
         <p>{t('tiles.empty.text')}</p>
         <div className="tile-empty__actions">
-          <Link className="btn btn--dark" href="/#360"><Icon name="360" /><span>{t('showroom.cta')}</span></Link>
+          <Link className="btn btn--dark" href="/#360">{t('showroom.cta')}</Link>
           <Link className="btn btn--light" href="/beratung">{t('mega.showroomAdvice')}</Link>
         </div>
       </>

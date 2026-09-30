@@ -515,14 +515,16 @@ svg { width: 1em; height: 1em; flex: none; }
 .cat-card .media { position: absolute; inset: 0; border-radius: 0; }
 .cat-card::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(0deg, rgba(20, 18, 15, .58) 0%, rgba(20, 18, 15, .2) 24%, rgba(20, 18, 15, 0) 44%);
+  background: linear-gradient(0deg, rgba(20, 18, 15, .66) 0%, rgba(20, 18, 15, .28) 28%, rgba(20, 18, 15, 0) 50%);
 }
 .cat-card__caption {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: clamp(16px, 1.6vw, 22px) clamp(16px, 1.8vw, 24px); color: #fff;
-  font: 500 clamp(.9375rem, .88rem + .2vw, 1.0625rem)/1.25 var(--font-body);
 }
+.cat-card__text { display: grid; gap: 4px; min-width: 0; }
+.cat-card__title { font: 600 clamp(1.0625rem, 1rem + .25vw, 1.25rem)/1.2 var(--font-body); }
+.cat-card__sub { font-size: clamp(.8125rem, .79rem + .1vw, .875rem); line-height: 1.35; color: rgba(255, 255, 255, .84); }
 .cat-card:focus-visible { outline: 2px solid var(--gold-ink); outline-offset: 3px; }
 /* Arrows on the ends of the row; phones and tablets swipe */
 .cat-nav { position: absolute; top: 50%; z-index: 2; transform: translateY(-50%); box-shadow: 0 10px 28px -14px rgba(29, 27, 24, .55); }
@@ -1504,7 +1506,9 @@ dialog.is-open .drawer__body > ul > li, dialog.is-open .menu-list li { opacity: 
   .categories .scroller { overflow: visible; scroll-snap-type: none; }
   .cat-track { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-columns: auto; width: auto; padding: 0 var(--gutter); gap: 10px; }
   .cat-card { aspect-ratio: 3 / 4; border-radius: var(--radius-btn); }
-  .cat-card__caption { padding: 12px; font-size: .875rem; }
+  .cat-card__caption { gap: 8px; padding: 12px; }
+  .cat-card__title { font-size: 1rem; }
+  .cat-card__sub { font-size: .75rem; }
   .cat-nav { display: none; }
   .reviews__grid { grid-template-columns: 1fr; }
   .section-head .carousel-nav { display: none; }

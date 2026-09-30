@@ -34,15 +34,15 @@ function Img({ photo: p }: { photo: Photo }) {
    Anty Sky White, Emrance Grey, Esterda Latte, Orion Peach, Elite Beige), AI-generated from its photo. */
 const room = (name: string) => photo(`/assets/img/categories/${name}.jpg`);
 
-const CATEGORIES: ({ label: MessageKey; photo: Photo } & ({ href: string } | { wa: WaTopic }))[] = [
-  { label: 'cat.all', href: '/fliesen', photo: room('fliesen') },
-  { label: 'cat.wall', href: '/fliesen?art=wandfliesen', photo: room('wandfliesen') },
-  { label: 'cat.floor', href: '/fliesen?art=bodenfliesen', photo: room('bodenfliesen') },
-  { label: 'cat.large', href: '/fliesen?art=grossformate', photo: room('grossformate') },
-  { label: 'cat.slabs', href: '/fliesen?art=steinplatten', photo: room('steinplatten') },
-  { label: 'cat.kitchens', wa: 'kitchen', photo: room('kuechen') },
-  { label: 'cat.worktops', href: '/fliesen?art=kueche', photo: room('arbeitsplatten') },
-  { label: 'cat.install', href: '/verlegung-montage', photo: room('verlegung') },
+const CATEGORIES: ({ label: MessageKey; sub: MessageKey; photo: Photo } & ({ href: string } | { wa: WaTopic }))[] = [
+  { label: 'cat.all', sub: 'cat.all.sub', href: '/fliesen', photo: room('fliesen') },
+  { label: 'cat.wall', sub: 'cat.wall.sub', href: '/fliesen?art=wandfliesen', photo: room('wandfliesen') },
+  { label: 'cat.floor', sub: 'cat.floor.sub', href: '/fliesen?art=bodenfliesen', photo: room('bodenfliesen') },
+  { label: 'cat.large', sub: 'cat.large.sub', href: '/fliesen?art=grossformate', photo: room('grossformate') },
+  { label: 'cat.slabs', sub: 'cat.slabs.sub', href: '/fliesen?art=steinplatten', photo: room('steinplatten') },
+  { label: 'cat.kitchens', sub: 'cat.kitchens.sub', wa: 'kitchen', photo: room('kuechen') },
+  { label: 'cat.worktops', sub: 'cat.worktops.sub', href: '/fliesen?art=kueche', photo: room('arbeitsplatten') },
+  { label: 'cat.install', sub: 'cat.install.sub', href: '/verlegung-montage', photo: room('verlegung') },
 ];
 
 /* An icon per line of the showroom list: tiles, large formats, kitchens, worktops */
@@ -100,7 +100,7 @@ export default async function Home() {
         </div>
       </HeroTour>
 
-      {/* 2 · Range: tall picture cards in a swipe row, each with its name and an arrow */}
+      {/* 2 · Range: tall picture cards in a swipe row, each with its name, a line about it and an arrow */}
       <section className="categories" id="sortiment" aria-labelledby="cat-title">
         <div className="container section-head cat-head">
           <div>
@@ -116,7 +116,10 @@ export default async function Home() {
                   const inner = (
                     <>
                       <span className="media"><Img photo={item.photo} /></span>
-                      <span className="cat-card__caption"><span>{t(item.label)}</span><span className="card-go" aria-hidden="true"><Icon name="arrow" /></span></span>
+                      <span className="cat-card__caption">
+                        <span className="cat-card__text"><span className="cat-card__title">{t(item.label)}</span><span className="cat-card__sub">{t(item.sub)}</span></span>
+                        <span className="card-go" aria-hidden="true"><Icon name="arrow" /></span>
+                      </span>
                     </>
                   );
                   return (
