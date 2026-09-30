@@ -31,6 +31,7 @@ export function HeaderShell({ children }: { children: ReactNode }) {
     const onScroll = () => {
       if (!ticking) { requestAnimationFrame(update); ticking = true; }
     };
+    update();   // a reload can land mid-page: start white there, not see-through
     addEventListener('scroll', onScroll, { passive: true });
     return () => removeEventListener('scroll', onScroll);
   }, []);
@@ -44,8 +45,10 @@ export function HeaderShell({ children }: { children: ReactNode }) {
   );
 }
 
-/** Top-level nav item with a mega menu: opens on hover (with intent delays), click and keyboard. */
-export function MegaItem({ id, label, compact, children }: { id: string; label: string; compact?: boolean; children: ReactNode }) {
+/** Top-level nav item with a mega menu: opens on hover (with intent delays), click and keyboard.
+    `section` lists the paths it stands for; on those (and below them) the item shows as current. Menus
+    link across sections (the tiles menu lists the services too), so its links alone don't decide it. */
+export function MegaItem({ id, label, section, cards, children }: { id: string; label: string; section: string[]; cards?: boolean; children: ReactNode }) {
   const context = use(MegaContext);
   if (!context) throw new Error('MegaItem must be inside HeaderShell');
   const { openId, setOpenId } = context;
@@ -54,16 +57,12 @@ export function MegaItem({ id, label, compact, children }: { id: string; label: 
   const button = useRef<HTMLButtonElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const pathname = usePathname();
-  const [current, setCurrent] = useState(false);
+  const current = section.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 
   const show = () => setOpenId(id);
   const hide = () => setOpenId((current) => (current === id ? null : current));
   const canHover = () => matchMedia('(hover: hover)').matches;
 
-  // Underline the item when the current page is one of its links
-  useEffect(() => {
-    setCurrent(!!ref.current?.querySelector('a[aria-current="page"]'));
-  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -93,7 +92,7 @@ export function MegaItem({ id, label, compact, children }: { id: string; label: 
       <button ref={button} className="nav__link" type="button" aria-expanded={open} aria-controls={`mega-${id}`} onClick={open ? hide : show}>
         <span>{label}</span><Icon name="chevron" className="nav__chev" />
       </button>
-      <div className={cx('mega', compact && 'mega--compact')} id={`mega-${id}`} onClick={onMega}>
+      <div className={cx('mega', cards && 'mega--cards')} id={`mega-${id}`} onClick={onMega}>
         <div className="mega__inner">{children}</div>
       </div>
     </li>

@@ -18,7 +18,6 @@ export const SITE = {
 
 // Photos and catalogues still live on the current site (keramiksan.de)
 export const UPLOADS = 'https://keramiksan.de/wp-content/uploads/';
-const upload = (path: string) => `${UPLOADS}${path}`;
 
 /** The catalogues on /kataloge. `file` lives in keramiksan.de/wp-content/uploads; `mb` is its size. */
 export const CATALOGS = [
@@ -51,14 +50,10 @@ export const CREDIT = {
   url: 'https://xn--nll-hoa.com/',
 };
 
-/** Project photos from keramiksan.de (the two-audiences cards on the homepage). */
-export const PHOTO = {
-  stairs: upload('2021/09/r__0001_referenz_9.jpg'),
-  slide3: upload('2021/08/slide3.jpg'),
-};
-
 export const BRAND = {
   logo: '/assets/img/brand/logo-horizontal.png',
+  /** The same with the BK mark at 76 %, for the header bar */
+  logoHeader: '/assets/img/brand/logo-header.png',
   mark: '/assets/img/brand/logo-mark.png',
 };
 

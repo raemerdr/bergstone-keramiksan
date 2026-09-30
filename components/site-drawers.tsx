@@ -31,6 +31,7 @@ export async function SiteDrawers() {
           </div>
           <nav className="drawer__body">
             <ul className="menu-list">
+              <li style={menu()}><NavLink href="/">{t('crumb.home')}</NavLink></li>
               <li style={menu()}><NavLink href="/fliesen">{t('nav.tiles')}</NavLink></li>
               <li className="menu-list__group" style={menu()}>
                 <span>{t('mega.tileService')}</span>
@@ -43,9 +44,6 @@ export async function SiteDrawers() {
               </li>
               <li style={menu()}><NavLink href="/kataloge">{t('nav.catalogs')}</NavLink></li>
               <li style={menu()}><NavLink href="/blog">{t('nav.blog')}</NavLink></li>
-              <li style={menu()}><NavLink href="/#profis">{t('nav.pro')}</NavLink></li>
-              <li style={menu()}><NavLink href="/#bewertungen">{t('nav.refs')}</NavLink></li>
-              <li style={menu()}><NavLink href="/#showroom">{t('nav.showroom')}</NavLink></li>
               <li style={menu()}><NavLink href="/kontakt">{t('footer.contact')}</NavLink></li>
             </ul>
           </nav>

@@ -2,20 +2,22 @@ import { Fragment } from 'react';
 import { preload } from 'react-dom';
 import { Carousel, CarouselButton, CarouselTrack } from '@/components/carousel';
 import { Faq } from '@/components/faq';
+import { FeatureIcon, type FeatureIconName } from '@/components/feature-icon';
 import { HeroTitle, HeroTour } from '@/components/home/hero-tour';
 import { Icon } from '@/components/icons';
 import { Link } from '@/components/link';
 import { Reveal, SplitHeading } from '@/components/motion';
 import { ProductCard } from '@/components/product-card';
 import { ReviewText } from '@/components/review-text';
+import { TileKindIcon } from '@/components/tile-kind-icon';
 import { TourButton } from '@/components/tour-triggers';
 import { WaLink } from '@/components/wa-link';
 import type { MessageKey } from '@/lib/i18n';
 import { fill, lines } from '@/lib/i18n';
 import { getLang, getT } from '@/lib/i18n/server';
 import { REVIEW_SUMMARY, REVIEWS } from '@/lib/reviews';
-import { BRAND, CATALOGS, PHOTO, SITE } from '@/lib/site';
-import { FEATURED_TILES, tileById, tilePhoto, type Tile } from '@/lib/tiles';
+import { CATALOGS, SITE } from '@/lib/site';
+import { FEATURED_TILES, tileById, type Tile, type TileFilter } from '@/lib/tiles';
 import { idx, pos, stagger } from '@/lib/ui';
 import type { WaTopic } from '@/lib/whatsapp';
 
@@ -23,7 +25,6 @@ import type { WaTopic } from '@/lib/whatsapp';
 interface Photo { src: string; pos?: string }
 
 const photo = (src: string, extra: Omit<Photo, 'src'> = {}): Photo => ({ src, ...extra });
-const tile = (img: string): Photo => ({ src: tilePhoto(img) });
 
 function Img({ photo: p }: { photo: Photo }) {
   return <img src={p.src} alt="" loading="lazy" style={p.pos ? pos(p.pos) : undefined} />;
@@ -44,19 +45,21 @@ const CATEGORIES: ({ label: MessageKey; photo: Photo } & ({ href: string } | { w
   { label: 'cat.install', href: '/verlegung-montage', photo: room('verlegung') },
 ];
 
+/* An icon per line of the showroom list: tiles, large formats, kitchens, worktops */
+const SHOWROOM_ICONS: TileFilter[] = ['alle', 'grossformate', 'kueche', 'steinplatten'];
 
 /* Photos for the "well advised" cards under the showroom (AI-generated, public/assets/img/advice) */
 const advice = (name: string) => photo(`/assets/img/advice/${name}.jpg`);
 
-/* Photos for the professionals section (AI-generated, public/assets/img/pro) */
-const PRO_CARDS: { n: 1 | 2 | 3 | 4; photo: Photo }[] = [
-  { n: 1, photo: photo('/assets/img/pro/auswahl.jpg') },
-  { n: 2, photo: photo('/assets/img/pro/planung.jpg') },
-  { n: 3, photo: photo('/assets/img/pro/montage.jpg') },
-  { n: 4, photo: photo('/assets/img/pro/kommunikation.jpg') },
+/* Professionals: a card per topic with an icon per point and a link onwards; the last one leads to the
+   contact band at the end of the page. Photos AI-generated (public/assets/img/pro). */
+const PRO_CARDS: { n: 1 | 2 | 3 | 4; photo: Photo; icons: readonly [FeatureIconName, FeatureIconName, FeatureIconName]; href: string; link: MessageKey }[] = [
+  { n: 1, photo: photo('/assets/img/pro/auswahl.jpg'), icons: ['tiles', 'samples', 'pin'], href: '/kataloge', link: 'conf.catalogs.link' },
+  { n: 2, photo: photo('/assets/img/pro/planung.jpg'), icons: ['swatches', 'measure', 'blueprint'], href: '/planung-aufmass', link: 'svcp.more' },
+  { n: 3, photo: photo('/assets/img/pro/montage.jpg'), icons: ['truck', 'tools', 'europe'], href: '/verlegung-montage', link: 'svcp.more' },
+  { n: 4, photo: photo('/assets/img/pro/kommunikation.jpg'), icons: ['language', 'phone', 'handshake'], href: '#anfrage', link: 'contact.form.title' },
 ];
-
-
+const PRO_POINTS = ['b1', 'b2', 'b3'] as const;
 
 /** Five stars, the first `n` filled; announced as "n of 5 stars". */
 function Stars({ n, label }: { n: number; label: string }) {
@@ -69,6 +72,9 @@ function Stars({ n, label }: { n: number; label: string }) {
 
 const FAQ = [1, 2, 3, 4, 5, 6] as const;
 
+/** Copy with `*…*` around some words: those are set in italic (the headline accent). */
+const accent = (text: string) => text.split('*').map((part, i) => (i % 2 ? <em key={i}>{part}</em> : part));
+
 const initials = (name: string) => name.split(/\s+/).map((part) => part[0]).join('').slice(0, 2).toUpperCase();
 
 const featured = FEATURED_TILES.map((id) => tileById.get(id)).filter((item): item is Tile => !!item);
@@ -77,102 +83,59 @@ export default async function Home() {
   const t = await getT();
   const lang = await getLang();
   const month = new Intl.DateTimeFormat(lang === 'de' ? 'de-DE' : 'en-GB', { month: 'long', year: 'numeric' });
-  preload('/assets/img/tour/hero-360.jpg', { as: 'image', media: '(min-width: 700px)', fetchPriority: 'high' });
-  preload('/assets/img/tour/hero-360-mobile.jpg', { as: 'image', media: '(max-width: 699px)', fetchPriority: 'high' });
+  preload('/assets/img/hero/home.jpg', { as: 'image', media: '(min-width: 700px)', fetchPriority: 'high' });
+  preload('/assets/img/hero/home-mobile.jpg', { as: 'image', media: '(max-width: 699px)', fetchPriority: 'high' });
   const conf = stagger();
-  const story = stagger();
 
   return (
     <main id="main">
-      {/* 1 · Hero: a picture of the reception; the button swaps it for the live 360° tour, starting at the entrance */}
+      {/* 1 · Hero: the consultation area (generated from the tour), copy on the left; the button swaps it for the live 360° tour, starting at the entrance */}
       <HeroTour alt={t('hero.alt')}>
-        <p className="eyebrow hero__eyebrow"><span>{t('hero.eyebrow')}</span></p>
+        <ul className="hero__tags">{lines(t('hero.tags')).map((tag) => <li key={tag}>{tag}</li>)}</ul>
         <HeroTitle>{t('hero.title')}</HeroTitle>
         <p className="hero__text">{t('hero.text')}</p>
         <div className="hero__actions">
-          <TourButton className="btn btn--dark"><Icon name="360" /><span>{t('hero.cta360')}</span></TourButton>
-          <WaLink topic="consult" className="btn btn--light"><Icon name="wa" /><span>{t('hero.cta1')}</span></WaLink>
+          <WaLink topic="consult" className="btn btn--gold"><span>{t('hero.cta1')}</span></WaLink>
+          <TourButton className="btn btn--light"><span>{t('hero.cta360')}</span></TourButton>
         </div>
       </HeroTour>
 
-      {/* 2 · Category grid (8 entry points) */}
-      <section className="section categories" id="sortiment" aria-labelledby="cat-title">
-        <h2 className="visually-hidden" id="cat-title">{t('cat.title')}</h2>
-        <Reveal as="ul" kind="items" className="container cat-grid">
-          {CATEGORIES.map((item, i) => {
-            const inner = (
-              <>
-                <span className="media media--4x3"><Img photo={item.photo} /></span>
-                <span className="cat-card__label"><span className="link">{t(item.label)}</span></span>
-              </>
-            );
-            return (
-              <li key={item.label} style={idx(i)}>
-                {'wa' in item
-                  ? <WaLink topic={item.wa} className="cat-card">{inner}</WaLink>
-                  : <Link className="cat-card" href={item.href}>{inner}</Link>}
-              </li>
-            );
-          })}
-        </Reveal>
-      </section>
-
-      {/* 3 · Showroom: photo with text, then "well advised" in four picture cards */}
-      <section className="section section--soft feature" id="showroom" aria-labelledby="showroom-title">
-        <Reveal kind="media" className="container feature__inner feature__inner--media-first">
-          <Link className="feature__media" href="/beratung" tabIndex={-1} aria-hidden="true">
-            <img src="/assets/img/showroom-beratung.jpg" width={1260} height={1040} alt="" loading="lazy" />
-          </Link>
-          <div className="feature__content">
-            <p className="eyebrow"><span>{t('showroom.eyebrow')}</span></p>
-            <SplitHeading className="h2" id="showroom-title">{t('showroom.title')}</SplitHeading>
-            <div className="feature__prose">
-              <p>{t('showroom.text')}</p>
-              <ul className="bullets showroom__list">
-                {lines(t('showroom.list')).map((item) => <li key={item}>{item}</li>)}
-              </ul>
-              <div className="feature__actions">
-                <Link className="btn btn--dark btn--arrow" href="/beratung"><span>{t('showroom.more')}</span><Icon name="arrow" /></Link>
-              </div>
-            </div>
+      {/* 2 · Range: tall picture cards in a swipe row, each with its name and an arrow */}
+      <section className="categories" id="sortiment" aria-labelledby="cat-title">
+        <div className="container section-head cat-head">
+          <div>
+            <p className="eyebrow"><span>{t('cat.title')}</span></p>
+            <SplitHeading className="h2" id="cat-title">{t('cat.heading')}</SplitHeading>
           </div>
-        </Reveal>
-        <div className="container showroom__advice">
-          <SplitHeading className="h2" id="conf-title">{t('conf.title')}</SplitHeading>
-          <Reveal as="ul" kind="items" className="conf-grid">
-            <li style={conf()}>
-              <Link className="conf-card" href="/planung-aufmass">
-                <span className="media media--2x3"><Img photo={advice('planung')} /></span>
-                <h3 className="conf-card__title">{t('svc.planning')}</h3>
-                <span className="link">{t('svcp.more')}</span>
-              </Link>
-            </li>
-            <li style={conf()}>
-              <Link className="conf-card" href="/kontakt">
-                <span className="media media--2x3"><Img photo={advice('showroom')} /></span>
-                <h3 className="conf-card__title">{t('showroom.eyebrow')}</h3>
-                <span className="link">{t('conf.showroom.link')}</span>
-              </Link>
-            </li>
-            <li style={conf()}>
-              <Link className="conf-card" href="/verlegung-montage">
-                <span className="media media--2x3"><Img photo={advice('montage')} /></span>
-                <h3 className="conf-card__title">{t('svc.delivery')}</h3>
-                <span className="link">{t('svcp.more')}</span>
-              </Link>
-            </li>
-            <li style={conf()}>
-              <Link className="conf-card" href="/kataloge">
-                <span className="media media--2x3"><Img photo={advice('kataloge')} /></span>
-                <h3 className="conf-card__title">{t('conf.catalogs.title')}</h3>
-                <span className="link">{t('conf.catalogs.link')}</span>
-              </Link>
-            </li>
-          </Reveal>
         </div>
+        <Carousel>
+          <div className="cat-row">
+            <CarouselTrack className="scroller">
+              <Reveal as="ul" kind="items" className="cat-track">
+                {CATEGORIES.map((item, i) => {
+                  const inner = (
+                    <>
+                      <span className="media"><Img photo={item.photo} /></span>
+                      <span className="cat-card__caption"><span>{t(item.label)}</span><span className="card-go" aria-hidden="true"><Icon name="arrow" /></span></span>
+                    </>
+                  );
+                  return (
+                    <li key={item.label} style={idx(i)}>
+                      {'wa' in item
+                        ? <WaLink topic={item.wa} className="cat-card">{inner}</WaLink>
+                        : <Link className="cat-card" href={item.href}>{inner}</Link>}
+                    </li>
+                  );
+                })}
+              </Reveal>
+            </CarouselTrack>
+            <CarouselButton dir="prev" className="round-btn cat-nav cat-nav--prev" label={t('a11y.prev')} />
+            <CarouselButton dir="next" className="round-btn cat-nav cat-nav--next" label={t('a11y.next')} />
+          </div>
+        </Carousel>
       </section>
 
-      {/* 4 · Featured tiles (scroll carousel) */}
+      {/* 3 · Featured tiles (scroll carousel) */}
       <section className="section products" id="bestseller" aria-labelledby="best-title">
         <Carousel>
           <div className="container section-head">
@@ -190,7 +153,78 @@ export default async function Home() {
               {featured.map((item, i) => <ProductCard key={item.id} tile={item} style={idx(i)} />)}
             </Reveal>
           </CarouselTrack>
+          {/* Phones show the favourites as a grid; this leads on to the full range */}
+          <div className="container products__more">
+            <Link className="btn btn--dark" href="/fliesen"><span>{t('best.all')}</span></Link>
+          </div>
         </Carousel>
+      </section>
+
+      {/* 4 · Showroom: photo with text, then "well advised" in four picture cards */}
+      <section className="section section--soft feature showroom" id="showroom" aria-labelledby="showroom-title">
+        <Reveal kind="media" className="feature__inner feature--bleed">
+          <div className="feature__media" aria-hidden="true">
+            <img src="/assets/img/showroom-beratung.jpg" width={2400} height={1350} alt="" loading="lazy" />
+          </div>
+          <div className="container feature__overlay">
+            <div className="feature__content feature__card">
+              <p className="eyebrow"><span>{t('showroom.eyebrow')}</span></p>
+              <SplitHeading className="h2" id="showroom-title">{t('showroom.title')}</SplitHeading>
+              <div className="feature__prose">
+                <p>{t('showroom.text')}</p>
+                <ul className="showroom__list">
+                  {lines(t('showroom.list')).map((item, i) => (
+                    <li key={item}><TileKindIcon kind={SHOWROOM_ICONS[i] ?? 'alle'} className="showroom__icon" /><span>{item}</span></li>
+                  ))}
+                </ul>
+                <div className="feature__actions">
+                  <Link className="btn btn--light btn--arrow" href="/beratung"><span>{t('showroom.more')}</span><Icon name="arrow" /></Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+        <div className="container showroom__advice">
+          <SplitHeading className="h2" id="conf-title">{t('conf.title')}</SplitHeading>
+          <Reveal as="ul" kind="items" className="conf-grid">
+            <li style={conf()}>
+              <Link className="conf-card" href="/planung-aufmass">
+                <span className="media media--2x3"><Img photo={advice('planung')} /></span>
+                <div className="conf-card__body">
+                  <h3 className="conf-card__title">{t('svc.planning')}</h3>
+                  <span className="card-go" aria-hidden="true"><Icon name="arrow" /></span>
+                </div>
+              </Link>
+            </li>
+            <li style={conf()}>
+              <Link className="conf-card" href="/kontakt">
+                <span className="media media--2x3"><Img photo={advice('showroom')} /></span>
+                <div className="conf-card__body">
+                  <h3 className="conf-card__title">{t('showroom.eyebrow')}</h3>
+                  <span className="card-go" aria-hidden="true"><Icon name="arrow" /></span>
+                </div>
+              </Link>
+            </li>
+            <li style={conf()}>
+              <Link className="conf-card" href="/verlegung-montage">
+                <span className="media media--2x3"><Img photo={advice('montage')} /></span>
+                <div className="conf-card__body">
+                  <h3 className="conf-card__title">{t('svc.delivery')}</h3>
+                  <span className="card-go" aria-hidden="true"><Icon name="arrow" /></span>
+                </div>
+              </Link>
+            </li>
+            <li style={conf()}>
+              <Link className="conf-card" href="/kataloge">
+                <span className="media media--2x3"><Img photo={advice('kataloge')} /></span>
+                <div className="conf-card__body">
+                  <h3 className="conf-card__title">{t('conf.catalogs.title')}</h3>
+                  <span className="card-go" aria-hidden="true"><Icon name="arrow" /></span>
+                </div>
+              </Link>
+            </li>
+          </Reveal>
+        </div>
       </section>
 
       {/* Catalogues: text and button on the left, a fanned stack of covers on the right */}
@@ -210,26 +244,43 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      {/* 5 · Professionals (multi-column on dark) */}
+      {/* 5 · Professionals: a large card per topic, stacked; the photo alternates sides (left, right, left, right); then a banner to get in touch */}
       <section className="section section--dark pro" id="profis" aria-labelledby="pro-title">
         <div className="container">
-          <SplitHeading className="h2" id="pro-title">{t('pro.title')}</SplitHeading>
+          <SplitHeading className="h2 pro__title" id="pro-title">{t('pro.title')}</SplitHeading>
           <Reveal as="p" kind="fade" className="pro__intro">{t('pro.text')}</Reveal>
-          <Reveal as="ul" kind="items" className="pro-grid">
-            {PRO_CARDS.map(({ n, photo: p }, i) => (
-              <li key={n} className="pro-card" style={idx(i)}>
-                <span className="media media--3x2"><Img photo={p} /></span>
-                <h3 className="pro-card__title">{t(`pro.c${n}.title`)}</h3>
-                <ul className="bullets">
-                  <li>{t(`pro.c${n}.b1`)}</li>
-                  <li>{t(`pro.c${n}.b2`)}</li>
-                  <li>{t(`pro.c${n}.b3`)}</li>
-                </ul>
-              </li>
-            ))}
-          </Reveal>
-          <Reveal kind="fade" className="pro__cta">
-            <WaLink topic="pro" className="btn btn--light">{t('pro.cta')}</WaLink>
+          <ul className="pro-list">
+            {PRO_CARDS.map(({ n, photo: p, icons, href, link }) => {
+              const cta = <><span>{t(link)}</span><Icon name="arrow" /></>;
+              return (
+                <li key={n}>
+                  <Reveal kind="fade" className="pro-card">
+                    <span className="media"><Img photo={p} /></span>
+                    <div className="pro-card__body">
+                      <p className="eyebrow"><span>{`0${n}`}</span></p>
+                      <h3 className="pro-card__title">{t(`pro.c${n}.title`)}</h3>
+                      <ul className="pro-card__points">
+                        {PRO_POINTS.map((b, j) => (
+                          <li key={b}><FeatureIcon name={icons[j]} className="pro-card__icon" /><span>{t(`pro.c${n}.${b}`)}</span></li>
+                        ))}
+                      </ul>
+                      {href.startsWith('#')
+                        ? <a className="btn btn--ghost-light btn--arrow pro-card__btn" href={href}>{cta}</a>
+                        : <Link className="btn btn--ghost-light btn--arrow pro-card__btn" href={href}>{cta}</Link>}
+                    </div>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ul>
+          {/* Their call to action: a wide banner, the copy on the left, tile samples on the right (AI-generated) */}
+          <Reveal kind="fade" className="pro-cta">
+            <div className="pro-cta__copy">
+              <SplitHeading as="h3" className="h2 pro-cta__title">{t('pro.ctaTitle')}</SplitHeading>
+              <p>{t('pro.ctaText')}</p>
+              <WaLink topic="pro" className="btn btn--light btn--arrow"><span>{t('pro.cta')}</span><Icon name="arrow" /></WaLink>
+            </div>
+            <img className="pro-cta__photo" src="/assets/img/pro/cta-tiles.jpg" width={2400} height={1028} alt="" loading="lazy" />
           </Reveal>
         </div>
       </section>
@@ -270,69 +321,21 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 7 · Two audiences */}
-      <section className="section duo" aria-label={t('duo.label')}>
-        <Reveal as="ul" kind="items" className="container duo-grid">
-          <li style={idx(0)}>
-            <WaLink topic="consult" className="duo-card">
-              <span className="media media--4x3"><Img photo={photo(PHOTO.slide3, { pos: '42% 50%' })} /></span>
-              <h3 className="duo-card__title">{t('duo.home.title')}</h3>
-              <p>{t('duo.home.text')}</p>
-              <span className="link">{t('duo.home.link')}</span>
-            </WaLink>
-          </li>
-          <li style={idx(1)}>
-            <a className="duo-card" href="#profis">
-              <span className="media media--4x3"><Img photo={photo(PHOTO.stairs, { pos: '50% 55%' })} /></span>
-              <h3 className="duo-card__title">{t('duo.pro.title')}</h3>
-              <p>{t('duo.pro.text')}</p>
-              <span className="link">{t('duo.pro.link')}</span>
-            </a>
-          </li>
-        </Reveal>
-      </section>
-
-      {/* 8 · Story band (soft background) */}
-      <section className="section section--soft story" aria-labelledby="story-title">
-        <h2 className="visually-hidden" id="story-title">{t('story.title')}</h2>
-        <Reveal as="ul" kind="items" className="container duo-grid">
-          <li className="story-card" style={story()}>
-            <span className="media media--wide story-card__media">
-              <Img photo={tile('IMG_9908')} />
-              <span className="story-card__overlay" aria-hidden="true">
-                <img className="story-card__mark" src={BRAND.mark} alt="" loading="lazy" />
-                <span className="story-card__claim">
-                  {lines(t('story.claim')).map((line, i) => <Fragment key={i}>{i > 0 && <br />}{line}</Fragment>)}
-                </span>
-              </span>
-            </span>
-            <h3 className="duo-card__title">{t('story.rebrand.title')}</h3>
-            <p>{t('story.rebrand.text')}</p>
-            <a className="link" href="#showroom">{t('story.rebrand.link')}</a>
-          </li>
-          <li className="story-card" style={story()}>
-            <span className="media media--wide story-card__media">
-              <Img photo={tile('IMG_9910')} />
-              <span className="lang-badge" aria-hidden="true">
-                <svg className="lang-badge__ring" viewBox="0 0 200 200">
-                  <defs><path id="badge-circle" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" /></defs>
-                  <text><textPath href="#badge-circle" textLength="486" lengthAdjust="spacing">BERATUNG · DANIŞMANLIK · ADVICE ·</textPath></text>
-                </svg>
-                <span className="lang-badge__core">DE<br />TR<br />EN</span>
-              </span>
-            </span>
-            <h3 className="duo-card__title">{t('story.lang.title')}</h3>
-            <p>{t('story.lang.text')}</p>
-            <WaLink topic="general" className="link">{t('story.lang.link')}</WaLink>
-          </li>
-        </Reveal>
-      </section>
-
-      {/* 9 · FAQ */}
-      <section className="section faq-section" id="faq" aria-labelledby="faq-title">
-        <div className="container faq-section__inner">
-          <SplitHeading className="h2 section-title" id="faq-title">{t('svcp.faq')}</SplitHeading>
-          <Faq items={FAQ.map((n) => ({ q: t(`faq.q${n}`), a: t(`faq.a${n}`) }))} />
+      {/* 7 · FAQ: the heading on top; below, a promise and the WhatsApp button beside the questions as cards */}
+      <section className="section faq-home" id="faq" aria-labelledby="faq-title">
+        <div className="container">
+          <div className="faq-home__head">
+            <p className="eyebrow"><span>{t('faq.eyebrow')}</span></p>
+            <SplitHeading className="h2" id="faq-title">{t('faq.title')}</SplitHeading>
+          </div>
+          <div className="faq-home__body">
+            <div className="faq-home__aside">
+              <p className="faq-home__lead">{accent(t('faq.lead'))}</p>
+              <p className="faq-home__text">{t('faq.leadText')}</p>
+              <WaLink topic="consult" className="btn btn--gold"><Icon name="wa" /><span>{t('hero.cta1')}</span></WaLink>
+            </div>
+            <Faq items={FAQ.map((n) => ({ q: t(`faq.q${n}`), a: t(`faq.a${n}`) }))} />
+          </div>
         </div>
       </section>
     </main>

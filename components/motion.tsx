@@ -57,7 +57,7 @@ export function Reveal({ as: Tag = 'div', kind, className, ...props }: { as?: 'd
 }
 
 interface SplitHeadingProps extends HTMLAttributes<HTMLHeadingElement> {
-  as?: 'h1' | 'h2';
+  as?: 'h1' | 'h2' | 'h3';
   children: string;
   /** Controls the entrance from outside (the hero) instead of on scroll. */
   revealed?: boolean;
@@ -65,7 +65,27 @@ interface SplitHeadingProps extends HTMLAttributes<HTMLHeadingElement> {
   replay?: number;
 }
 
-type Split = { phase: 'plain' } | { phase: 'measure' } | { phase: 'split'; lines: string[] };
+type Split = { phase: 'plain' } | { phase: 'measure' } | { phase: 'split'; lines: number[][]; text: string };   // word indices per line of that text
+
+/** A headline's words. `*…*` around some of them marks an accent, set in italic; the asterisks are not shown. */
+function parseWords(text: string) {
+  let accent = false;
+  return text.split(/[ \t\n\r]+/).filter(Boolean).map((raw) => {   // no-break spaces keep words together
+    let word = raw;
+    if (word.startsWith('*')) { accent = true; word = word.slice(1); }
+    const closes = word.endsWith('*');
+    if (closes) word = word.slice(0, -1);
+    const item = { word, accent };
+    if (closes) accent = false;
+    return item;
+  });
+}
+
+function Words({ words, only }: { words: ReturnType<typeof parseWords>; only?: number[] }) {
+  return (only ?? words.map((_, i) => i)).map((w, j) => (
+    <Fragment key={w}>{j > 0 && ' '}{words[w].accent ? <em>{words[w].word}</em> : words[w].word}</Fragment>
+  ));
+}
 
 /** Headline whose lines rise into place one after another (`[data-split]` in the CSS). */
 export function SplitHeading({ as: Tag = 'h2', className, children: text, revealed, replay = 0, ...props }: SplitHeadingProps) {
@@ -101,14 +121,14 @@ export function SplitHeading({ as: Tag = 'h2', className, children: text, reveal
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el || split.phase !== 'measure') return;
-    const rows: string[][] = [];
+    const rows: number[][] = [];
     let lastTop: number | null = null;
-    el.querySelectorAll<HTMLElement>('.w').forEach((w) => {
+    el.querySelectorAll<HTMLElement>('.w').forEach((w, i) => {
       if (lastTop === null || w.offsetTop - lastTop > 2) { rows.push([]); lastTop = w.offsetTop; }
-      rows[rows.length - 1].push(w.textContent ?? '');
+      rows[rows.length - 1].push(i);
     });
-    setSplit({ phase: 'split', lines: rows.map((row) => row.join(' ')) });
-  }, [split]);
+    setSplit({ phase: 'split', lines: rows, text });
+  }, [split, text]);
 
   // Lay the lines out hidden once before `is-in` can apply, so the entrance always transitions
   useLayoutEffect(() => {
@@ -126,20 +146,22 @@ export function SplitHeading({ as: Tag = 'h2', className, children: text, reveal
     el.classList.add('is-in');
   }, [replay]);
 
-  const words = text.split(/[ \t\n\r]+/).filter(Boolean);   // no-break spaces keep words together
+  const words = parseWords(text);
+  // Lines measured for other words (the language changed) show as plain text until these are measured
+  const layout: Split = split.phase === 'split' && split.text !== text ? { phase: 'plain' } : split;
 
   return (
-    <Tag ref={ref} data-split className={cx(className, split.phase !== 'plain' && 'is-split', shown && 'is-in')} {...props}>
-      {split.phase === 'plain' ? text : (
+    <Tag ref={ref} data-split className={cx(className, layout.phase !== 'plain' && 'is-split', shown && 'is-in')} {...props}>
+      {layout.phase === 'plain' ? <Words words={words} /> : (
         <>
-          <span className="visually-hidden">{text}</span>
-          {split.phase === 'measure' ? (
+          <span className="visually-hidden">{text.replaceAll('*', '')}</span>
+          {layout.phase === 'measure' ? (
             <span aria-hidden="true" className="split-measure">
-              {words.map((word, i) => <Fragment key={i}>{i > 0 && ' '}<span className="w">{word}</span></Fragment>)}
+              {words.map(({ word, accent }, i) => <Fragment key={i}>{i > 0 && ' '}<span className="w">{accent ? <em>{word}</em> : word}</span></Fragment>)}
             </span>
           ) : (
             <span aria-hidden="true">
-              {split.lines.map((line, i) => <span key={i} className="split-line" style={idx(i)}><span>{line}</span></span>)}
+              {layout.lines.map((line, i) => <span key={i} className="split-line" style={idx(i)}><span><Words words={words} only={line} /></span></span>)}
             </span>
           )}
         </>

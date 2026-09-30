@@ -65,5 +65,5 @@ export function CarouselButton({ dir, label, className }: { dir: 'prev' | 'next'
 export function CarouselTrack({ as: Tag = 'div', reveal, className, ...props }: { as?: 'div' | 'ul'; reveal?: boolean } & HTMLAttributes<HTMLElement>) {
   const { scroller } = useCarousel();
   const inView = useReveal(scroller, !!reveal);
-  return <Tag ref={scroller as never} data-reveal={reveal ? 'items' : undefined} className={cx(className, reveal && inView && 'is-in')} {...props} />;
+  return <Tag ref={scroller as never} data-reveal={reveal ? 'items' : undefined} data-lenis-prevent-horizontal className={cx(className, reveal && inView && 'is-in')} {...props} />;
 }

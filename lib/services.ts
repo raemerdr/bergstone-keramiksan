@@ -18,11 +18,11 @@ export interface Service {
   image: string;
   /** Icons for the features f1–f4. */
   icons: [FeatureIconName, FeatureIconName, FeatureIconName, FeatureIconName];
-  /** Media-with-text band between the steps and the FAQ. */
+  /** Band between the steps and the FAQ: a full-width photo with the copy on it. */
   band: {
     href: string;
     tour?: boolean; // the link opens the 360° tour on the homepage
-    icon: IconName;
+    icon?: IconName;
     cta: MessageKey;
     media: { src: string; width: number; height: number };
   };
@@ -32,7 +32,7 @@ export const SERVICES: Service[] = [
   {
     slug: 'beratung', key: 'beratung', label: 'mega.showroomAdvice', wa: 'consult', image: '/assets/img/svc/beratung.jpg',
     icons: ['samples', 'language', 'swatches', 'handshake'],
-    band: { href: '/#360', tour: true, icon: '360', cta: 'showroom.cta', media: { src: '/assets/img/tour/showroom-lounge.jpg', width: 1260, height: 1040 } },
+    band: { href: '/#360', tour: true, cta: 'showroom.cta', media: { src: '/assets/img/svc/band-beratung.jpg', width: 2400, height: 1350 } },
   },
   {
     slug: 'planung-aufmass', key: 'planung', label: 'svc.planning', wa: 'planning', image: '/assets/img/svc/planung.jpg',

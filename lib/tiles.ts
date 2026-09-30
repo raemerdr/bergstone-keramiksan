@@ -6,7 +6,7 @@
      bodenfliesen = matt or carving finish, or a square format
      grossformate = longest side ≥ 100 cm
      steinplatten = none yet (the 8 slabs are still to come)
-     kueche       = natural stone slabs for kitchen worktops (WORKTOPS below; not part of "alle")
+     kueche       = natural stone slabs for kitchen worktops (WORKTOPS below; "alle" lists them after the tiles)
    finish: matt | glossy | highgloss | carving | polished   ·   size: [width, height] in cm, null when cut to size */
 import type { MessageKey } from './i18n';
 
@@ -112,7 +112,7 @@ export const tilePhoto = (img: string) => `/assets/img/tiles/${img}.jpg`;
 export const tileSize = (tile: Tile) => (tile.size ? `${tile.size[0]} × ${tile.size[1]} cm` : '');
 export const isWorktop = (tile: Tile) => tile.kinds.includes('kueche');
 export const tileHref = (tile: Tile) => `/fliesen/${tile.id}`;
-export const matchesFilter = (tile: Tile, filter: TileFilter) => (filter === 'alle' ? !isWorktop(tile) : tile.kinds.includes(filter));
+export const matchesFilter = (tile: Tile, filter: TileFilter) => filter === 'alle' || tile.kinds.includes(filter);
 export const parseFilter = (value: string | null): TileFilter => TILE_FILTERS.find((f) => f === value) ?? 'alle';
 
 /** Tiles to suggest next to one: the same series first (shared first word, e.g. "Ashwin"), then same finish and format. */

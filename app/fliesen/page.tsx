@@ -5,9 +5,10 @@ import { Link } from '@/components/link';
 import { SplitHeading } from '@/components/motion';
 import { TileListing, TileListingFromUrl, type TileListingProps } from '@/components/tile-listing';
 import { TilesHelp } from '@/components/tiles-help';
+import { TilesHeroMedia, TilesHeroMediaFromUrl } from '@/components/tiles-hero';
 import { WaLink } from '@/components/wa-link';
 import { getT } from '@/lib/i18n/server';
-import { FILTER_LABELS, TILE_FILTERS, tilePhoto } from '@/lib/tiles';
+import { FILTER_LABELS, TILE_FILTERS } from '@/lib/tiles';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getT();
@@ -33,8 +34,11 @@ export default async function TilesPage() {
 
   return (
     <main id="main" className="tiles-page">
-      {/* Intro */}
+      {/* Intro: a picture of the chosen tile type behind the copy */}
       <section className="page-hero page-hero--tiles" aria-labelledby="page-title">
+        <Suspense fallback={<TilesHeroMedia filter="alle" />}>
+          <TilesHeroMediaFromUrl />
+        </Suspense>
         <div className="container page-hero__inner">
           <div className="page-hero__text">
             <nav className="crumbs" aria-label={t('crumb.label')}>
@@ -47,13 +51,6 @@ export default async function TilesPage() {
               <Link className="btn btn--dark" href="/kataloge"><Icon name="download" /><span>{t('conf.catalogs.link')}</span></Link>
               <WaLink topic="consult" className="btn btn--light"><Icon name="wa" /><span>{t('hero.cta1')}</span></WaLink>
             </div>
-          </div>
-          <div className="swatches" aria-hidden="true">
-            {['IMG_9913', 'IMG_9898', 'IMG_9970'].map((img, i) => (
-              <span key={img} className={`swatch swatch--${i + 1}`}>
-                <img src={tilePhoto(img)} alt="" />
-              </span>
-            ))}
           </div>
         </div>
       </section>

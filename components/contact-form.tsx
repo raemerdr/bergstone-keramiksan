@@ -10,7 +10,7 @@ export interface ContactFormLabels {
 
 /** Prepares a message and opens it in WhatsApp or the visitor's mail app. Nothing is stored or sent
     from here, so the site needs no form backend (see the privacy policy). */
-export function ContactForm({ labels, topics, privacyLink }: { labels: ContactFormLabels; topics: string[]; privacyLink: ReactNode }) {
+export function ContactForm({ labels, topics, privacyLink, titleId = 'form-title' }: { labels: ContactFormLabels; topics: string[]; privacyLink: ReactNode; titleId?: string }) {
   const id = useId();
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -29,7 +29,7 @@ export function ContactForm({ labels, topics, privacyLink }: { labels: ContactFo
   }
 
   return (
-    <form className="contact-form" onSubmit={submit} aria-labelledby="form-title">
+    <form className="contact-form" onSubmit={submit} aria-labelledby={titleId}>
       <div className="field">
         <label htmlFor={`${id}-name`}>{labels.name} <span className="field__optional">{labels.optional}</span></label>
         <input id={`${id}-name`} name="name" autoComplete="name" />

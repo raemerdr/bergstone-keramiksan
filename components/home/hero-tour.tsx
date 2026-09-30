@@ -278,8 +278,8 @@ export function HeroTour({ alt, children }: { alt: string; children: ReactNode }
       <section ref={hero} className={classes} data-hero aria-labelledby="hero-title">
         <div className="hero__media">
           <picture>
-            <source media="(max-width: 699px)" srcSet="/assets/img/tour/hero-360-mobile.jpg" width={780} height={1440} />
-            <img ref={poster} src="/assets/img/tour/hero-360.jpg" width={2100} height={1180} fetchPriority="high" alt={alt} />
+            <source media="(max-width: 699px)" srcSet="/assets/img/hero/home-mobile.jpg" width={1040} height={780} />
+            <img ref={poster} src="/assets/img/hero/home.jpg" width={2560} height={1440} fetchPriority="high" alt={alt} />
           </picture>
         </div>
         <div className="hero__tour">
@@ -315,7 +315,7 @@ export function HeroTour({ alt, children }: { alt: string; children: ReactNode }
           </button>
         </div>
         <div className="pano-rooms" id="pano-rooms" hidden={!roomsOpen}>
-          <ul ref={roomList} className="pano-rooms__list">
+          <ul ref={roomList} className="pano-rooms__list" data-lenis-prevent-horizontal>
             {pano && ROOM_ORDER.map((id) => (
               <li key={id}>
                 <button type="button" className="pano-card" aria-current={room === id} onClick={() => tour.current?.go(id)}>

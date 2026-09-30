@@ -6,6 +6,7 @@ import { Link } from '@/components/link';
 import { Reveal, SplitHeading } from '@/components/motion';
 import { TourLink } from '@/components/tour-triggers';
 import { WaLink } from '@/components/wa-link';
+import { contactFormLabels, contactTopics } from '@/lib/contact';
 import { getT } from '@/lib/i18n/server';
 import { SITE } from '@/lib/site';
 import { idx } from '@/lib/ui';
@@ -18,7 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   const t = await getT();
   const mail = `mailto:${SITE.email}`;
-  const topics = [t('mega.showroomAdvice'), t('nav.tiles'), t('cat.worktops'), t('svc.planning'), t('cat.install'), t('svc.repairs'), t('contact.form.other')];
 
   return (
     <main id="main">
@@ -96,14 +96,9 @@ export default async function ContactPage() {
             <p>{t('contact.form.text')}</p>
           </div>
           <ContactForm
-            topics={topics}
+            topics={contactTopics(t)}
             privacyLink={<Link className="link" href="/datenschutz">{t('footer.privacy')}</Link>}
-            labels={{
-              name: t('contact.form.name'), optional: t('contact.form.optional'), topic: t('contact.form.topic'),
-              topicLine: t('contact.form.topicLine'), message: t('contact.form.message'), hint: t('contact.form.hint'),
-              wa: t('contact.form.wa'), mail: t('contact.form.mail'), greeting: t('wa.greeting'),
-              subject: t('contact.form.subject'), note: t('contact.form.note'),
-            }}
+            labels={contactFormLabels(t)}
           />
         </div>
       </section>
